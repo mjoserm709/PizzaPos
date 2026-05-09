@@ -30,15 +30,29 @@ public partial class UserManagementForm : Form
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             
-            var rolesJson = await _httpClient.GetStringAsync("http://localhost:5267/api/users/roles");
-            var roles = JsonSerializer.Deserialize<List<string>>(rolesJson);
-            clbRoles.Items.Clear();
-            if (roles != null) foreach (var role in roles) clbRoles.Items.Add(role);
+            var response = await _httpClient.GetAsync("http://localhost:5267/api/users/roles");
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<List<string>>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (dynamicResult != null && dynamicResult.Success && dynamicResult.Data != null)
+                {
+                    clbRoles.Items.Clear();
+                    foreach (var role in dynamicResult.Data) clbRoles.Items.Add(role);
+                }
+            }
 
-            var permsJson = await _httpClient.GetStringAsync("http://localhost:5267/api/users/permissions");
-            var perms = JsonSerializer.Deserialize<List<string>>(permsJson);
-            clbPermissions.Items.Clear();
-            if (perms != null) foreach (var perm in perms) clbPermissions.Items.Add(perm);
+            response = await _httpClient.GetAsync("http://localhost:5267/api/users/permissions");
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<List<string>>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (dynamicResult != null && dynamicResult.Success && dynamicResult.Data != null)
+                {
+                    clbPermissions.Items.Clear();
+                    foreach (var perm in dynamicResult.Data) clbPermissions.Items.Add(perm);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -51,27 +65,33 @@ public partial class UserManagementForm : Form
         try
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            var usersJson = await _httpClient.GetStringAsync("http://localhost:5267/api/users");
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var users = JsonSerializer.Deserialize<List<UserResponse>>(usersJson, options);
-
-            _usersList = users ?? new List<UserResponse>();
-            dgvUsers.DataSource = _usersList.Select(u => new {
-                u.Id,
-                Usuario = u.Username,
-                Nombre = u.FullName,
-                Identidad = u.IdentityNumber,
-                Activo = u.IsActive ? "Sí" : "No",
-                Creado = u.CreatedAt.ToString("g"),
-                CreadoPor = u.CreatedBy,
-                Modificado = u.UpdatedAt?.ToString("g") ?? "-",
-                ModificadoPor = u.UpdatedBy ?? "-",
-                Roles = string.Join(", ", u.Roles)
-            }).ToList();
-            
-            if (dgvUsers.Columns.Count > 0)
+            var response = await _httpClient.GetAsync("http://localhost:5267/api/users");
+            if (response.IsSuccessStatusCode)
             {
-                dgvUsers.Columns["Roles"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<List<UserResponse>>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (dynamicResult != null && dynamicResult.Success && dynamicResult.Data != null)
+                {
+                    _usersList = dynamicResult.Data;
+                    dgvUsers.DataSource = _usersList.Select(u => new {
+                        u.Id,
+                        Usuario = u.Username,
+                        Nombre = u.FullName,
+                        Identidad = u.IdentityNumber,
+                        Activo = u.IsActive ? "Sí" : "No",
+                        Creado = u.CreatedAt.ToString("g"),
+                        CreadoPor = u.CreatedBy,
+                        Modificado = u.UpdatedAt?.ToString("g") ?? "-",
+                        ModificadoPor = u.UpdatedBy ?? "-",
+                        Roles = string.Join(", ", u.Roles)
+                    }).ToList();
+                    
+                    if (dgvUsers.Columns.Count > 0)
+                    {
+                        dgvUsers.Columns["Roles"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -186,14 +206,24 @@ public partial class UserManagementForm : Form
 
             if (response.IsSuccessStatusCode)
             {
-                MessageBox.Show(_selectedUserId == null ? "Usuario creado exitosamente." : "Usuario actualizado exitosamente.");
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<string>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                MessageBox.Show(dynamicResult?.Message ?? (_selectedUserId == null ? "Usuario creado exitosamente." : "Usuario actualizado exitosamente."));
                 ClearForm();
                 await LoadUsers();
             }
             else
             {
-                var error = await response.Content.ReadAsStringAsync();
-                MessageBox.Show($"Error: {error}");
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<string>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                string errorMessage = dynamicResult?.Message ?? "Ocurrió un error inesperado";
+                if (dynamicResult?.Errors != null && dynamicResult.Errors.Any())
+                {
+                    errorMessage += "\n\nDetalles:\n- " + string.Join("\n- ", dynamicResult.Errors);
+                }
+                
+                MessageBox.Show($"Error: {errorMessage}");
             }
         }
         catch (Exception ex)

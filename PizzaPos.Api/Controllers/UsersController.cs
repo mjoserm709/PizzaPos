@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaPos.Application.DTOs;
 using PizzaPos.Application.Interfaces;
+using PizzaPos.Application.Common;
 
 namespace PizzaPos.Api.Controllers;
 
@@ -20,7 +21,8 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _userService.GetAllUsersAsync());
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(DynamicResponse<IEnumerable<UserResponseDto>>.CreateSuccess(users));
     }
 
     [HttpPost]
@@ -29,11 +31,11 @@ public class UsersController : ControllerBase
         try
         {
             await _userService.CreateUserAsync(request, User.Identity?.Name ?? "System");
-            return Ok(new { message = "Usuario creado exitosamente" });
+            return Ok(DynamicResponse<string>.CreateSuccess("Usuario creado exitosamente"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(DynamicResponse<string>.CreateError(ex.Message));
         }
     }
 
@@ -43,11 +45,11 @@ public class UsersController : ControllerBase
         try
         {
             await _userService.UpdateUserAsync(request, User.Identity?.Name ?? "System");
-            return Ok(new { message = "Usuario actualizado exitosamente" });
+            return Ok(DynamicResponse<string>.CreateSuccess("Usuario actualizado exitosamente"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(DynamicResponse<string>.CreateError(ex.Message));
         }
     }
 
@@ -55,18 +57,20 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UpdateStatus([FromBody] UpdateUserStatusRequest request)
     {
         await _userService.UpdateStatusAsync(request);
-        return Ok(new { message = "Estado actualizado" });
+        return Ok(DynamicResponse<string>.CreateSuccess("Estado actualizado"));
     }
 
     [HttpGet("roles")]
     public async Task<IActionResult> GetRoles()
     {
-        return Ok(await _userService.GetRolesAsync());
+        var roles = await _userService.GetRolesAsync();
+        return Ok(DynamicResponse<IEnumerable<string>>.CreateSuccess(roles));
     }
 
     [HttpGet("permissions")]
     public async Task<IActionResult> GetPermissions()
     {
-        return Ok(await _userService.GetPermissionsAsync());
+        var perms = await _userService.GetPermissionsAsync();
+        return Ok(DynamicResponse<IEnumerable<string>>.CreateSuccess(perms));
     }
 }

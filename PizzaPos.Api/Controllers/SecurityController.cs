@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaPos.Application.DTOs;
 using PizzaPos.Application.Interfaces;
+using PizzaPos.Application.Common;
 
 namespace PizzaPos.Api.Controllers;
 
@@ -21,20 +22,20 @@ public class SecurityController : ControllerBase
     public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
     {
         await _securityService.CreateRoleAsync(request, User.Identity?.Name ?? "System");
-        return Ok(new { message = "Rol creado exitosamente" });
+        return Ok(DynamicResponse<string>.CreateSuccess("Rol creado exitosamente"));
     }
 
     [HttpPatch("roles/status")]
     public async Task<IActionResult> UpdateRoleStatus([FromBody] UpdateRoleStatusRequest request)
     {
         await _securityService.UpdateRoleStatusAsync(request, User.Identity?.Name ?? "System");
-        return Ok(new { message = "Estado de rol actualizado" });
+        return Ok(DynamicResponse<string>.CreateSuccess("Estado de rol actualizado"));
     }
 
     [HttpPost("permissions")]
     public async Task<IActionResult> CreatePermission([FromBody] CreatePermissionRequest request)
     {
         await _securityService.CreatePermissionAsync(request, User.Identity?.Name ?? "System");
-        return Ok(new { message = "Permiso creado exitosamente" });
+        return Ok(DynamicResponse<string>.CreateSuccess("Permiso creado exitosamente"));
     }
 }

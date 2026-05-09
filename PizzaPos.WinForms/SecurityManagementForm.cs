@@ -25,10 +25,17 @@ public partial class SecurityManagementForm : Form
         try
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            var permsJson = await _httpClient.GetStringAsync("http://localhost:5267/api/users/permissions");
-            var perms = JsonSerializer.Deserialize<List<string>>(permsJson);
-            clbRolePermissions.Items.Clear();
-            if (perms != null) foreach (var perm in perms) clbRolePermissions.Items.Add(perm);
+            var response = await _httpClient.GetAsync("http://localhost:5267/api/users/permissions");
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DynamicResponse<List<string>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (result != null && result.Success && result.Data != null)
+                {
+                    clbRolePermissions.Items.Clear();
+                    foreach (var perm in result.Data) clbRolePermissions.Items.Add(perm);
+                }
+            }
         }
         catch (Exception ex) { MessageBox.Show(ex.Message); }
     }
@@ -39,7 +46,21 @@ public partial class SecurityManagementForm : Form
         var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
         var res = await _httpClient.PostAsync("http://localhost:5267/api/security/permissions", content);
-        if (res.IsSuccessStatusCode) { MessageBox.Show("Permiso creado"); await LoadPermissions(); }
+        if (res.IsSuccessStatusCode) 
+        { 
+            var json = await res.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            MessageBox.Show(result?.Message ?? "Permiso creado"); 
+            await LoadPermissions(); 
+        }
+        else
+        {
+            var json = await res.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            string error = result?.Message ?? "Error al crear permiso";
+            if (result?.Errors != null && result.Errors.Any()) error += "\n" + string.Join("\n", result.Errors);
+            MessageBox.Show(error);
+        }
     }
 
     private async void btnCreateRole_Click(object sender, EventArgs e)
@@ -49,6 +70,19 @@ public partial class SecurityManagementForm : Form
         var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
         var res = await _httpClient.PostAsync("http://localhost:5267/api/security/roles", content);
-        if (res.IsSuccessStatusCode) { MessageBox.Show("Rol creado"); }
+        if (res.IsSuccessStatusCode) 
+        { 
+            var json = await res.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            MessageBox.Show(result?.Message ?? "Rol creado"); 
+        }
+        else
+        {
+            var json = await res.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            string error = result?.Message ?? "Error al crear rol";
+            if (result?.Errors != null && result.Errors.Any()) error += "\n" + string.Join("\n", result.Errors);
+            MessageBox.Show(error);
+        }
     }
 }

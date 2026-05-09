@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaPos.Application.DTOs;
 using PizzaPos.Application.Interfaces;
 
+using PizzaPos.Application.Common;
+
 namespace PizzaPos.Api.Controllers;
 
 [ApiController]
@@ -18,13 +20,13 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var response = await _loginService.LoginAsync(request);
+        var result = await _loginService.LoginAsync(request);
 
-        if (response == null)
+        if (result == null)
         {
-            return Unauthorized(new { message = "Usuario o contraseña incorrectos" });
+            return Unauthorized(DynamicResponse<LoginResponse>.CreateError("Usuario o contraseña incorrectos"));
         }
 
-        return Ok(response);
+        return Ok(DynamicResponse<LoginResponse>.CreateSuccess(result));
     }
 }

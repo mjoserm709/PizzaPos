@@ -37,23 +37,41 @@ public partial class Form1 : Form
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                var authResult = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
+                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<JsonElement>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 
-                var token = authResult.GetProperty("token").GetString();
-                var roles = authResult.GetProperty("roles").EnumerateArray().Select(r => r.GetString()!).ToList();
+                if (dynamicResult != null && dynamicResult.Success)
+                {
+                    var authResult = dynamicResult.Data;
+                    var token = authResult.GetProperty("token").GetString();
+                    var roles = authResult.GetProperty("roles").EnumerateArray().Select(r => r.GetString()!).ToList();
 
-                lblStatus.Text = $"¡Bienvenido! Roles: {string.Join(", ", roles)}";
-                lblStatus.ForeColor = Color.Green;
+                    lblStatus.Text = $"¡Bienvenido! Roles: {string.Join(", ", roles)}";
+                    lblStatus.ForeColor = Color.Green;
 
-                // Navegar al formulario principal
-                var mainForm = new MainForm(username, roles, token!);
-                this.Hide();
-                mainForm.ShowDialog();
-                this.Close();
+                    // Navegar al formulario principal
+                    var mainForm = new MainForm(username, roles, token!);
+                    this.Hide();
+                    mainForm.ShowDialog();
+                    this.Close();
+                }
+                else
+                {
+                    lblStatus.Text = dynamicResult?.Message ?? "Error desconocido";
+                    lblStatus.ForeColor = Color.Red;
+                }
             }
             else
             {
-                lblStatus.Text = "Error: Usuario o contraseña incorrectos";
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<JsonElement>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                string errorMessage = dynamicResult?.Message ?? "Usuario o contraseña incorrectos";
+                if (dynamicResult?.Errors != null && dynamicResult.Errors.Any())
+                {
+                    errorMessage += " (" + string.Join(", ", dynamicResult.Errors) + ")";
+                }
+                
+                lblStatus.Text = errorMessage;
                 lblStatus.ForeColor = Color.Red;
             }
         }
