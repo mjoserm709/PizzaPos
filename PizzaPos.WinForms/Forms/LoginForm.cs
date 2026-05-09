@@ -1,13 +1,15 @@
 using System.Text;
 using System.Text.Json;
+using PizzaPos.WinForms.Models;
+using PizzaPos.WinForms.Utils;
 
-namespace PizzaPos.WinForms;
+namespace PizzaPos.WinForms.Forms;
 
-public partial class Form1 : Form
+public partial class LoginForm : Form
 {
     private static readonly HttpClient _httpClient = new HttpClient();
 
-    public Form1()
+    public LoginForm()
     {
         InitializeComponent();
     }
@@ -49,7 +51,6 @@ public partial class Form1 : Form
                     var mainForm = new MainForm(username, roles, token!);
                     this.Hide();
                     mainForm.Show();
-                    // No cerramos Form1 inmediatamente para no matar el hilo principal si es el único
                 }
                 else
                 {

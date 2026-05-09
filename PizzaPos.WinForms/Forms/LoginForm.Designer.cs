@@ -1,16 +1,9 @@
-namespace PizzaPos.WinForms;
+namespace PizzaPos.WinForms.Forms;
 
-partial class Form1
+partial class LoginForm
 {
-    /// <summary>
-    ///  Required designer variable.
-    /// </summary>
     private System.ComponentModel.IContainer components = null;
 
-    /// <summary>
-    ///  Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
         if (disposing && (components != null))
@@ -20,12 +13,6 @@ partial class Form1
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
-    /// <summary>
-    ///  Required method for Designer support - do not modify
-    ///  the contents of this method with the code editor.
-    /// </summary>
     private void InitializeComponent()
     {
         this.txtUsername = new System.Windows.Forms.TextBox();
@@ -87,7 +74,7 @@ partial class Form1
         this.lblStatus.Size = new System.Drawing.Size(0, 15);
         this.lblStatus.TabIndex = 5;
         // 
-        // Form1
+        // LoginForm
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -98,7 +85,8 @@ partial class Form1
         this.Controls.Add(this.btnLogin);
         this.Controls.Add(this.txtPassword);
         this.Controls.Add(this.txtUsername);
-        this.Name = "Form1";
+        this.Name = "LoginForm";
+        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "Pizza POS - Login";
         this.ResumeLayout(false);
         this.PerformLayout();
@@ -110,6 +98,4 @@ partial class Form1
     private System.Windows.Forms.Label lblUsername;
     private System.Windows.Forms.Label lblPassword;
     private System.Windows.Forms.Label lblStatus;
-
-    #endregion
 }

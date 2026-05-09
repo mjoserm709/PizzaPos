@@ -1,23 +1,24 @@
 using System.Text;
 using System.Text.Json;
 using System.Net.Http.Headers;
+using PizzaPos.WinForms.Models;
+using PizzaPos.WinForms.Utils;
 
-namespace PizzaPos.WinForms;
+namespace PizzaPos.WinForms.UserControls.Admin;
 
-public partial class SecurityManagementForm : Form
+public partial class SecurityManagementControl : UserControl
 {
     private readonly string _token;
     private static readonly HttpClient _httpClient = new HttpClient();
 
-    public SecurityManagementForm(string token)
+    public SecurityManagementControl(string token)
     {
         InitializeComponent();
         _token = token;
-    }
-
-    private async void SecurityManagementForm_Load(object sender, EventArgs e)
-    {
-        await LoadPermissions();
+        
+        this.Load += async (s, e) => {
+            await LoadPermissions();
+        };
     }
 
     private async Task LoadPermissions()
@@ -37,7 +38,7 @@ public partial class SecurityManagementForm : Form
                 }
             }
         }
-        catch (Exception ex) { MessageBox.Show(ex.Message); }
+        catch (Exception ex) { ToastNotification.Error($"Error cargando permisos: {ex.Message}"); }
     }
 
     private async void btnCreatePermission_Click(object sender, EventArgs e)

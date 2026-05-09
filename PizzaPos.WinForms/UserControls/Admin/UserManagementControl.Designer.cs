@@ -1,6 +1,6 @@
-namespace PizzaPos.WinForms;
+namespace PizzaPos.WinForms.UserControls.Admin;
 
-partial class UserManagementForm
+partial class UserManagementControl
 {
     private System.ComponentModel.IContainer components = null;
 
@@ -142,6 +142,29 @@ partial class UserManagementForm
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
         // 
+        // dgvUsers
+        // 
+        this.dgvUsers.AllowUserToAddRows = false;
+        this.dgvUsers.AllowUserToDeleteRows = false;
+        this.dgvUsers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        this.dgvUsers.Location = new System.Drawing.Point(550, 70);
+        this.dgvUsers.Name = "dgvUsers";
+        this.dgvUsers.ReadOnly = true;
+        this.dgvUsers.RowTemplate.Height = 25;
+        this.dgvUsers.Size = new System.Drawing.Size(400, 340);
+        this.dgvUsers.TabIndex = 12;
+        this.dgvUsers.SelectionChanged += new System.EventHandler(this.dgvUsers_SelectionChanged);
+        // 
+        // lblUserList
+        // 
+        this.lblUserList.AutoSize = true;
+        this.lblUserList.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+        this.lblUserList.Location = new System.Drawing.Point(550, 25);
+        this.lblUserList.Name = "lblUserList";
+        this.lblUserList.Size = new System.Drawing.Size(155, 21);
+        this.lblUserList.TabIndex = 13;
+        this.lblUserList.Text = "Usuarios Existentes";
+        // 
         // lblFullName
         // 
         this.lblFullName.AutoSize = true;
@@ -197,34 +220,10 @@ partial class UserManagementForm
         this.chkIsActive.Text = "Activo";
         this.chkIsActive.UseVisualStyleBackColor = true;
         // 
-        // dgvUsers
-        // 
-        this.dgvUsers.AllowUserToAddRows = false;
-        this.dgvUsers.AllowUserToDeleteRows = false;
-        this.dgvUsers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        this.dgvUsers.Location = new System.Drawing.Point(550, 70);
-        this.dgvUsers.Name = "dgvUsers";
-        this.dgvUsers.ReadOnly = true;
-        this.dgvUsers.RowTemplate.Height = 25;
-        this.dgvUsers.Size = new System.Drawing.Size(350, 340);
-        this.dgvUsers.TabIndex = 12;
-        this.dgvUsers.SelectionChanged += new System.EventHandler(this.dgvUsers_SelectionChanged);
-        // 
-        // lblUserList
-        // 
-        this.lblUserList.AutoSize = true;
-        this.lblUserList.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-        this.lblUserList.Location = new System.Drawing.Point(550, 25);
-        this.lblUserList.Name = "lblUserList";
-        this.lblUserList.Size = new System.Drawing.Size(155, 21);
-        this.lblUserList.TabIndex = 13;
-        this.lblUserList.Text = "Usuarios Existentes";
-        // 
-        // UserManagementForm
+        // UserManagementControl
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(950, 400);
         this.Controls.Add(this.chkIsActive);
         this.Controls.Add(this.btnNew);
         this.Controls.Add(this.txtIdentity);
@@ -245,9 +244,8 @@ partial class UserManagementForm
         this.Controls.Add(this.lblPassword);
         this.Controls.Add(this.lblUsername);
         this.Controls.Add(this.lblTitle);
-        this.Name = "UserManagementForm";
-        this.Text = "Pizza POS - Gestión de Usuarios";
-        this.Load += new System.EventHandler(this.UserManagementForm_Load);
+        this.Name = "UserManagementControl";
+        this.Size = new System.Drawing.Size(1000, 450);
         ((System.ComponentModel.ISupportInitialize)(this.dgvUsers)).EndInit();
         this.ResumeLayout(false);
         this.PerformLayout();

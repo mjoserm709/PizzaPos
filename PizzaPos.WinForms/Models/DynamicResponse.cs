@@ -1,4 +1,4 @@
-namespace PizzaPos.WinForms;
+namespace PizzaPos.WinForms.Models;
 
 public class DynamicResponse<T>
 {

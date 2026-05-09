@@ -1,27 +1,29 @@
 using System.Text;
 using System.Text.Json;
 using System.Net.Http.Headers;
+using PizzaPos.WinForms.Models;
+using PizzaPos.WinForms.Utils;
 
-namespace PizzaPos.WinForms;
+namespace PizzaPos.WinForms.UserControls.Admin;
 
-public partial class UserManagementForm : Form
+public partial class UserManagementControl : UserControl
 {
     private readonly string _token;
     private static readonly HttpClient _httpClient = new HttpClient();
     private int? _selectedUserId;
     private List<UserResponse> _usersList = new();
 
-    public UserManagementForm(string token)
+    public UserManagementControl(string token)
     {
         InitializeComponent();
         _token = token;
         txtIdentity.TextChanged += txtIdentity_TextChanged;
-    }
-
-    private async void UserManagementForm_Load(object sender, EventArgs e)
-    {
-        await LoadRolesAndPermissions();
-        await LoadUsers();
+        
+        // Load data when control is created
+        this.Load += async (s, e) => {
+            await LoadRolesAndPermissions();
+            await LoadUsers();
+        };
     }
 
     private async Task LoadRolesAndPermissions()
@@ -56,7 +58,7 @@ public partial class UserManagementForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error cargando datos: {ex.Message}");
+            ToastNotification.Error($"Error cargando datos: {ex.Message}");
         }
     }
 
@@ -96,7 +98,7 @@ public partial class UserManagementForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error cargando usuarios: {ex.Message}");
+            ToastNotification.Error($"Error cargando usuarios: {ex.Message}");
         }
     }
     
@@ -155,7 +157,7 @@ public partial class UserManagementForm : Form
     {
         if (txtNewPassword.Text != txtConfirmPassword.Text)
         {
-            MessageBox.Show("Las contraseñas no coinciden.");
+            ToastNotification.Error("Las contraseñas no coinciden.");
             return;
         }
 

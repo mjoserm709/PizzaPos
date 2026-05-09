@@ -1,6 +1,6 @@
-namespace PizzaPos.WinForms;
+namespace PizzaPos.WinForms.UserControls.Admin;
 
-partial class SecurityManagementForm
+partial class SecurityManagementControl
 {
     private System.ComponentModel.IContainer components = null;
 
@@ -41,7 +41,7 @@ partial class SecurityManagementForm
         this.tabControl1.Location = new System.Drawing.Point(0, 0);
         this.tabControl1.Name = "tabControl1";
         this.tabControl1.SelectedIndex = 0;
-        this.tabControl1.Size = new System.Drawing.Size(400, 300);
+        this.tabControl1.Size = new System.Drawing.Size(600, 450);
         this.tabControl1.TabIndex = 0;
         // 
         // tabPermissions
@@ -54,7 +54,7 @@ partial class SecurityManagementForm
         this.tabPermissions.Location = new System.Drawing.Point(4, 24);
         this.tabPermissions.Name = "tabPermissions";
         this.tabPermissions.Padding = new System.Windows.Forms.Padding(3);
-        this.tabPermissions.Size = new System.Drawing.Size(392, 272);
+        this.tabPermissions.Size = new System.Drawing.Size(592, 422);
         this.tabPermissions.TabIndex = 0;
         this.tabPermissions.Text = "Permisos";
         this.tabPermissions.UseVisualStyleBackColor = true;
@@ -69,7 +69,7 @@ partial class SecurityManagementForm
         this.tabRoles.Location = new System.Drawing.Point(4, 24);
         this.tabRoles.Name = "tabRoles";
         this.tabRoles.Padding = new System.Windows.Forms.Padding(3);
-        this.tabRoles.Size = new System.Drawing.Size(392, 272);
+        this.tabRoles.Size = new System.Drawing.Size(592, 422);
         this.tabRoles.TabIndex = 1;
         this.tabRoles.Text = "Roles";
         this.tabRoles.UseVisualStyleBackColor = true;
@@ -159,15 +159,13 @@ partial class SecurityManagementForm
         this.btnCreateRole.UseVisualStyleBackColor = true;
         this.btnCreateRole.Click += new System.EventHandler(this.btnCreateRole_Click);
         // 
-        // SecurityManagementForm
+        // SecurityManagementControl
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(400, 300);
         this.Controls.Add(this.tabControl1);
-        this.Name = "SecurityManagementForm";
-        this.Text = "Gestión de Seguridad";
-        this.Load += new System.EventHandler(this.SecurityManagementForm_Load);
+        this.Name = "SecurityManagementControl";
+        this.Size = new System.Drawing.Size(600, 450);
         this.tabControl1.ResumeLayout(false);
         this.tabPermissions.ResumeLayout(false);
         this.tabPermissions.PerformLayout();

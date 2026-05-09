@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace PizzaPos.WinForms
+namespace PizzaPos.WinForms.Utils
 {
     public class ToastNotification : Form
     {
@@ -61,6 +61,7 @@ namespace PizzaPos.WinForms
             _timer = new System.Windows.Forms.Timer { Interval = 50 };
             _timer.Tick += (s, e) => {
                 _elapsed += 50;
+                if (this.IsDisposed) return;
                 _pnlProgress.Width = (int)((double)_elapsed / _duration * this.Width);
                 if (_elapsed >= _duration) this.Close();
             };
