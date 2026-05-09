@@ -19,25 +19,19 @@ public class LoginService : ILoginService
     {
         var user = await _userRepository.GetByUsernameAsync(request.Username);
 
-        // Basic password check (in production use BCrypt or similar)
-        if (user == null || user.PasswordHash != request.Password)
+        if (user == null || user.PasswordHash != request.Password || !user.IsActive)
         {
             return null;
         }
 
-        if (!user.IsActive)
-        {
-            throw new Exception("User is inactive");
-        }
-
         var token = _jwtTokenGenerator.GenerateToken(user);
+        
+        var roles = user.Roles.Select(r => r.Name).ToList();
+        var permissions = user.Roles.SelectMany(r => r.Permissions.Select(p => p.Name))
+            .Concat(user.AdditionalPermissions.Select(p => p.Name))
+            .Distinct()
+            .ToList();
 
-        return new LoginResponse(
-            user.Id,
-            user.Username,
-            user.Role.Name,
-            user.Role.Permissions.Select(p => p.Name).ToList(),
-            token
-        );
+        return new LoginResponse(token, user.Username, roles, permissions);
     }
 }

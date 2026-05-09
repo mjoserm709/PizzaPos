@@ -17,17 +17,10 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByUsernameAsync(string username)
     {
         return await _context.Users
-            .Include(u => u.Role)
-            .ThenInclude(r => r.Permissions)
+            .Include(u => u.Roles)
+                .ThenInclude(r => r.Permissions)
+            .Include(u => u.AdditionalPermissions)
             .FirstOrDefaultAsync(u => u.Username == username);
-    }
-
-    public async Task<User?> GetByIdAsync(int id)
-    {
-        return await _context.Users
-            .Include(u => u.Role)
-            .ThenInclude(r => r.Permissions)
-            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task AddAsync(User user)
@@ -40,5 +33,20 @@ public class UserRepository : IUserRepository
     {
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<User>> GetAllAsync()
+    {
+        return await _context.Users
+            .Include(u => u.Roles)
+            .ToListAsync();
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await _context.Users
+            .Include(u => u.Roles)
+            .Include(u => u.AdditionalPermissions)
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 }

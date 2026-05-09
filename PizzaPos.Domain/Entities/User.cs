@@ -7,6 +7,6 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
 
-    public int RoleId { get; set; }
-    public Role Role { get; set; } = null!;
+    public ICollection<Role> Roles { get; set; } = new List<Role>();
+    public ICollection<Permission> AdditionalPermissions { get; set; } = new List<Permission>();
 }

@@ -30,12 +30,23 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.Name)
+            new Claim(ClaimTypes.Name, user.Username)
         };
 
-        // Add permissions as custom claims
-        foreach (var permission in user.Role.Permissions)
+        // Add multiple roles
+        foreach (var role in user.Roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            
+            // Add permissions from roles
+            foreach (var permission in role.Permissions)
+            {
+                claims.Add(new Claim("permission", permission.Name));
+            }
+        }
+
+        // Add additional individual permissions
+        foreach (var permission in user.AdditionalPermissions)
         {
             claims.Add(new Claim("permission", permission.Name));
         }

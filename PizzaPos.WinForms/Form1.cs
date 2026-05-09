@@ -40,13 +40,16 @@ public partial class Form1 : Form
                 var authResult = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
                 
                 var token = authResult.GetProperty("token").GetString();
-                var role = authResult.GetProperty("role").GetString();
+                var roles = authResult.GetProperty("roles").EnumerateArray().Select(r => r.GetString()!).ToList();
 
-                lblStatus.Text = $"¡Bienvenido! Rol: {role}";
+                lblStatus.Text = $"¡Bienvenido! Roles: {string.Join(", ", roles)}";
                 lblStatus.ForeColor = Color.Green;
 
-                // TODO: Guardar token y navegar al formulario principal
-                MessageBox.Show($"Login Exitoso. Token: {token?.Substring(0, 10)}...", "Éxito");
+                // Navegar al formulario principal
+                var mainForm = new MainForm(username, roles, token!);
+                this.Hide();
+                mainForm.ShowDialog();
+                this.Close();
             }
             else
             {

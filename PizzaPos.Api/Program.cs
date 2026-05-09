@@ -17,8 +17,12 @@ builder.Services.AddDbContext<PizzaPosDbContext>(options =>
 
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISecurityService, SecurityService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>

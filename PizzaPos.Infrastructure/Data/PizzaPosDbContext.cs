@@ -17,12 +17,22 @@ public class PizzaPosDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // SQLite doesn't support schemas. Using table prefixes for 'admin' logical separation.
         modelBuilder.Entity<User>().ToTable("Admin_Users");
         modelBuilder.Entity<Role>().ToTable("Admin_Roles");
         modelBuilder.Entity<Permission>().ToTable("Admin_Permissions");
 
-        // Many-to-many relationship for Role-Permission
+        // User - Roles (Many-to-Many)
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Roles)
+            .WithMany(r => r.Users)
+            .UsingEntity<Dictionary<string, object>>(
+                "Admin_UserRoles",
+                j => j.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId"),
+                j => j.ToTable("Admin_UserRoles")
+            );
+
+        // Role - Permissions (Many-to-Many)
         modelBuilder.Entity<Role>()
             .HasMany(r => r.Permissions)
             .WithMany(p => p.Roles)
@@ -33,26 +43,22 @@ public class PizzaPosDbContext : DbContext
                 j => j.ToTable("Admin_RolePermissions")
             );
 
-        // User-Role relationship
+        // User - Additional Permissions (Many-to-Many)
         modelBuilder.Entity<User>()
-            .HasOne(u => u.Role)
-            .WithMany(r => r.Users)
-            .HasForeignKey(u => u.RoleId);
+            .HasMany(u => u.AdditionalPermissions)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "Admin_UserPermissions",
+                j => j.HasOne<Permission>().WithMany().HasForeignKey("PermissionId"),
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId"),
+                j => j.ToTable("Admin_UserPermissions")
+            );
+            
+        // Initial Seed
+        modelBuilder.Entity<Role>().HasData(new Role { Id = 1, Name = "Admin" });
+        modelBuilder.Entity<User>().HasData(new User { Id = 1, Username = "admin", PasswordHash = "admin123", IsActive = true });
 
-        // Seed Data
-        modelBuilder.Entity<Role>().HasData(
-            new Role { Id = 1, Name = "Admin" },
-            new Role { Id = 2, Name = "Waiter" }
-        );
-
-        modelBuilder.Entity<Permission>().HasData(
-            new Permission { Id = 1, Name = "Menu.View" },
-            new Permission { Id = 2, Name = "Order.Create" },
-            new Permission { Id = 3, Name = "Admin.Manage" }
-        );
-
-        modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "admin", PasswordHash = "admin123", RoleId = 1 }
-        );
+        // Relación Admin - Usuario
+        modelBuilder.Entity("Admin_UserRoles").HasData(new { UserId = 1, RoleId = 1 });
     }
 }
