@@ -1,0 +1,6 @@
+@echo off
+echo Iniciando API...
+start cmd /k "dotnet run --project PizzaPos.Api"
+timeout /t 5
+echo Iniciando Frontend...
+dotnet run --project PizzaPos.WinForms

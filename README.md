@@ -37,6 +37,26 @@ El proyecto está dividido en dos partes principales:
    dotnet run
    ```
 
+### Ejecutar Ambos (API + Frontend)
+Si quieres iniciar ambos al mismo tiempo:
+
+#### Opción 1: Usando el script de PowerShell
+```powershell
+.\run-all.ps1
+```
+
+#### Opción 2: Usando el archivo Batch
+```cmd
+run-all.bat
+```
+
+#### Opción 3: Visual Studio 2022
+1. Haz clic derecho en la Solución (`PizzaPos`) en el Explorador de Soluciones.
+2. Selecciona **Configurar proyectos de inicio...** (Configure Startup Projects...).
+3. Selecciona **Proyectos de inicio múltiples** (Multiple startup projects).
+4. Establece la acción de ambos proyectos (`PizzaPos.Api` y `PizzaPos.WinForms`) en **Iniciar** (Start).
+5. Haz clic en **Aceptar** y luego presiona **F5**.
+
 ## Características Actuales
 - [x] Estructura de solución y proyectos.
 - [x] Endpoint de estado (`/api/status`) en la API.
