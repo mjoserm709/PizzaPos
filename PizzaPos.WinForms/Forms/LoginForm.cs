@@ -9,9 +9,30 @@ public partial class LoginForm : Form
 {
     private static readonly HttpClient _httpClient = new HttpClient();
 
+    private readonly string _configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
+
     public LoginForm()
     {
         InitializeComponent();
+    }
+
+    private void LoginForm_Load(object sender, EventArgs e)
+    {
+        try
+        {
+            if (File.Exists(_configPath))
+            {
+                var json = File.ReadAllText(_configPath);
+                var config = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+                if (config != null && config.TryGetValue("RememberedUser", out string? username))
+                {
+                    txtUsername.Text = username;
+                    chkRememberUser.Checked = true;
+                    this.ActiveControl = txtPassword;
+                }
+            }
+        }
+        catch { /* Ignorar errores de carga de config */ }
     }
 
     private async void btnLogin_Click(object sender, EventArgs e)
@@ -41,6 +62,21 @@ public partial class LoginForm : Form
                 
                 if (dynamicResult != null && dynamicResult.Success)
                 {
+                    // Guardar usuario si está marcado el check
+                    try
+                    {
+                        if (chkRememberUser.Checked)
+                        {
+                            var config = new Dictionary<string, string> { { "RememberedUser", username } };
+                            File.WriteAllText(_configPath, JsonSerializer.Serialize(config));
+                        }
+                        else if (File.Exists(_configPath))
+                        {
+                            File.Delete(_configPath);
+                        }
+                    }
+                    catch { /* Ignorar errores de guardado de config */ }
+
                     var authResult = dynamicResult.Data;
                     var token = authResult.GetProperty("token").GetString();
                     var roles = authResult.GetProperty("roles").EnumerateArray().Select(r => r.GetString()!).ToList();
@@ -49,6 +85,20 @@ public partial class LoginForm : Form
 
                     // Navegar al formulario principal
                     var mainForm = new MainForm(username, roles, token!);
+                    
+                    mainForm.FormClosed += (s, args) => {
+                        if (mainForm.IsLoggingOut)
+                        {
+                            this.Show();
+                            txtPassword.Clear();
+                            lblStatus.Text = "";
+                        }
+                        else
+                        {
+                            Application.Exit();
+                        }
+                    };
+
                     this.Hide();
                     mainForm.Show();
                 }

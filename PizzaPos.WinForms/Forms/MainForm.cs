@@ -13,6 +13,8 @@ public partial class MainForm : Form
     private HeaderControl _header;
     private SidebarControl _sidebar;
 
+    public bool IsLoggingOut { get; private set; } = false;
+
     public MainForm(string username, List<string> roles, string token)
     {
         InitializeComponent();
@@ -30,7 +32,10 @@ public partial class MainForm : Form
         // Header
         _header = new HeaderControl(_username, _roles);
         _header.Dock = DockStyle.Top;
-        _header.LogoutClick += (s, e) => this.Close();
+        _header.LogoutClick += (s, e) => {
+            IsLoggingOut = true;
+            this.Close();
+        };
         this.Controls.Add(_header);
 
         // Sidebar
@@ -44,7 +49,7 @@ public partial class MainForm : Form
         
         this.Controls.Add(_sidebar);
 
-        // Panel de Contenido (pnlContent ya existe en el diseñador)
+        // Panel de Contenido
         pnlContent.Dock = DockStyle.Fill;
         pnlContent.BringToFront();
     }
@@ -66,6 +71,6 @@ public partial class MainForm : Form
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
         base.OnFormClosed(e);
-        Application.Exit();
+        // El control de si se sale de la app o se vuelve al login lo lleva LoginForm
     }
 }

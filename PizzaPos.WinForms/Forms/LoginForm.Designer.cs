@@ -21,6 +21,7 @@ partial class LoginForm
         this.lblUsername = new System.Windows.Forms.Label();
         this.lblPassword = new System.Windows.Forms.Label();
         this.lblStatus = new System.Windows.Forms.Label();
+        this.chkRememberUser = new System.Windows.Forms.CheckBox();
         this.SuspendLayout();
         // 
         // txtUsername
@@ -38,12 +39,22 @@ partial class LoginForm
         this.txtPassword.Size = new System.Drawing.Size(250, 23);
         this.txtPassword.TabIndex = 1;
         // 
+        // chkRememberUser
+        // 
+        this.chkRememberUser.AutoSize = true;
+        this.chkRememberUser.Location = new System.Drawing.Point(100, 250);
+        this.chkRememberUser.Name = "chkRememberUser";
+        this.chkRememberUser.Size = new System.Drawing.Size(120, 19);
+        this.chkRememberUser.TabIndex = 6;
+        this.chkRememberUser.Text = "Recordar usuario";
+        this.chkRememberUser.UseVisualStyleBackColor = true;
+        // 
         // btnLogin
         // 
         this.btnLogin.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
         this.btnLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnLogin.ForeColor = System.Drawing.Color.White;
-        this.btnLogin.Location = new System.Drawing.Point(100, 280);
+        this.btnLogin.Location = new System.Drawing.Point(100, 290);
         this.btnLogin.Name = "btnLogin";
         this.btnLogin.Size = new System.Drawing.Size(250, 40);
         this.btnLogin.TabIndex = 2;
@@ -71,7 +82,7 @@ partial class LoginForm
         // 
         // lblStatus
         // 
-        this.lblStatus.Location = new System.Drawing.Point(100, 330);
+        this.lblStatus.Location = new System.Drawing.Point(100, 340);
         this.lblStatus.Name = "lblStatus";
         this.lblStatus.Size = new System.Drawing.Size(250, 20);
         this.lblStatus.TabIndex = 5;
@@ -83,6 +94,7 @@ partial class LoginForm
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.BackColor = System.Drawing.Color.White;
         this.ClientSize = new System.Drawing.Size(450, 450);
+        this.Controls.Add(this.chkRememberUser);
         this.Controls.Add(this.lblStatus);
         this.Controls.Add(this.lblPassword);
         this.Controls.Add(this.lblUsername);
@@ -94,6 +106,7 @@ partial class LoginForm
         this.Name = "LoginForm";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "Pizza POS - Login";
+        this.Load += new System.EventHandler(this.LoginForm_Load);
         this.ResumeLayout(false);
         this.PerformLayout();
     }
@@ -104,4 +117,5 @@ partial class LoginForm
     private System.Windows.Forms.Label lblUsername;
     private System.Windows.Forms.Label lblPassword;
     private System.Windows.Forms.Label lblStatus;
+    private System.Windows.Forms.CheckBox chkRememberUser;
 }
