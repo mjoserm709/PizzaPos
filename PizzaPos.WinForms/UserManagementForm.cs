@@ -179,13 +179,13 @@ public partial class UserManagementForm : Form
             string.IsNullOrEmpty(userData.identityNumber) ||
             (_selectedUserId == null && string.IsNullOrEmpty(userData.password)))
         {
-            MessageBox.Show("Por favor complete todos los campos requeridos.");
+            ToastNotification.Error("Complete todos los campos requeridos.");
             return;
         }
 
         if (userData.identityNumber.Length != 15)
         {
-            MessageBox.Show("La identidad debe tener exactamente 15 caracteres (formato: XXXX-XXXX-XXXXX).");
+            ToastNotification.Error("Identidad debe tener 15 caracteres (XXXX-XXXX-XXXXX).");
             return;
         }
 
@@ -208,7 +208,10 @@ public partial class UserManagementForm : Form
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<string>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                MessageBox.Show(dynamicResult?.Message ?? (_selectedUserId == null ? "Usuario creado exitosamente." : "Usuario actualizado exitosamente."));
+                
+                string action = _selectedUserId == null ? "creado" : "actualizado";
+                ToastNotification.Success($"El usuario '{userData.username}' ha sido {action} correctamente.");
+                
                 ClearForm();
                 await LoadUsers();
             }
@@ -217,18 +220,18 @@ public partial class UserManagementForm : Form
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<string>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 
-                string errorMessage = dynamicResult?.Message ?? "Ocurrió un error inesperado";
+                string errorMessage = dynamicResult?.Message ?? "Error en la operación";
                 if (dynamicResult?.Errors != null && dynamicResult.Errors.Any())
                 {
-                    errorMessage += "\n\nDetalles:\n- " + string.Join("\n- ", dynamicResult.Errors);
+                    errorMessage = string.Join(" | ", dynamicResult.Errors);
                 }
                 
-                MessageBox.Show($"Error: {errorMessage}");
+                ToastNotification.Error(errorMessage);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error de conexión: {ex.Message}");
+            ToastNotification.Error($"Error de conexión: {ex.Message}");
         }
     }
 

@@ -19,13 +19,11 @@ public partial class Form1 : Form
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            lblStatus.Text = "Por favor ingrese usuario y contraseña";
-            lblStatus.ForeColor = Color.Red;
+            ToastNotification.Error("Ingrese usuario y contraseña");
             return;
         }
 
         lblStatus.Text = "Autenticando...";
-        lblStatus.ForeColor = Color.Blue;
 
         try
         {
@@ -45,14 +43,13 @@ public partial class Form1 : Form
                     var token = authResult.GetProperty("token").GetString();
                     var roles = authResult.GetProperty("roles").EnumerateArray().Select(r => r.GetString()!).ToList();
 
-                    lblStatus.Text = $"¡Bienvenido! Roles: {string.Join(", ", roles)}";
-                    lblStatus.ForeColor = Color.Green;
+                    ToastNotification.Success($"Bienvenido, {username}");
 
                     // Navegar al formulario principal
                     var mainForm = new MainForm(username, roles, token!);
                     this.Hide();
-                    mainForm.ShowDialog();
-                    this.Close();
+                    mainForm.Show();
+                    // No cerramos Form1 inmediatamente para no matar el hilo principal si es el único
                 }
                 else
                 {
@@ -71,14 +68,14 @@ public partial class Form1 : Form
                     errorMessage += " (" + string.Join(", ", dynamicResult.Errors) + ")";
                 }
                 
-                lblStatus.Text = errorMessage;
-                lblStatus.ForeColor = Color.Red;
+                ToastNotification.Error(errorMessage);
+                lblStatus.Text = "";
             }
         }
         catch (Exception ex)
         {
-            lblStatus.Text = $"Error de conexión: {ex.Message}";
-            lblStatus.ForeColor = Color.Red;
+            ToastNotification.Error($"Error de conexión: {ex.Message}");
+            lblStatus.Text = "";
         }
     }
 }

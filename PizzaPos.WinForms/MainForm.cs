@@ -6,6 +6,8 @@ public partial class MainForm : Form
     private readonly List<string> _roles;
     private readonly string _token;
 
+    private Form? _currentForm;
+
     public MainForm(string username, List<string> roles, string token)
     {
         InitializeComponent();
@@ -22,20 +24,42 @@ public partial class MainForm : Form
         btnSecurity.Visible = isAdmin;
     }
 
+    private void LoadFormIntoPanel(Form childForm)
+    {
+        if (_currentForm != null)
+        {
+            _currentForm.Close();
+        }
+
+        _currentForm = childForm;
+        childForm.TopLevel = false;
+        childForm.FormBorderStyle = FormBorderStyle.None;
+        childForm.Dock = DockStyle.Fill;
+        
+        pnlContent.Controls.Clear();
+        pnlContent.Controls.Add(childForm);
+        pnlContent.Tag = childForm;
+        childForm.Show();
+    }
+
     private void btnManageUsers_Click(object sender, EventArgs e)
     {
-        var manageForm = new UserManagementForm(_token);
-        manageForm.ShowDialog();
+        LoadFormIntoPanel(new UserManagementForm(_token));
     }
 
     private void btnSecurity_Click(object sender, EventArgs e)
     {
-        var securityForm = new SecurityManagementForm(_token);
-        securityForm.ShowDialog();
+        LoadFormIntoPanel(new SecurityManagementForm(_token));
     }
 
     private void btnLogout_Click(object sender, EventArgs e)
     {
         this.Close();
+    }
+
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
+        base.OnFormClosed(e);
+        Application.Exit();
     }
 }

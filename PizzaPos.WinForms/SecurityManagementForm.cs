@@ -50,7 +50,7 @@ public partial class SecurityManagementForm : Form
         { 
             var json = await res.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            MessageBox.Show(result?.Message ?? "Permiso creado"); 
+            ToastNotification.Success($"El permiso '{txtPermName.Text}' ha sido creado exitosamente."); 
             await LoadPermissions(); 
         }
         else
@@ -58,8 +58,8 @@ public partial class SecurityManagementForm : Form
             var json = await res.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             string error = result?.Message ?? "Error al crear permiso";
-            if (result?.Errors != null && result.Errors.Any()) error += "\n" + string.Join("\n", result.Errors);
-            MessageBox.Show(error);
+            if (result?.Errors != null && result.Errors.Any()) error = string.Join(" | ", result.Errors);
+            ToastNotification.Error(error);
         }
     }
 
@@ -74,15 +74,15 @@ public partial class SecurityManagementForm : Form
         { 
             var json = await res.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            MessageBox.Show(result?.Message ?? "Rol creado"); 
+            ToastNotification.Success($"Rol '{txtRoleName.Text}' creado exitosamente."); 
         }
         else
         {
             var json = await res.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<DynamicResponse<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             string error = result?.Message ?? "Error al crear rol";
-            if (result?.Errors != null && result.Errors.Any()) error += "\n" + string.Join("\n", result.Errors);
-            MessageBox.Show(error);
+            if (result?.Errors != null && result.Errors.Any()) error = string.Join(" | ", result.Errors);
+            ToastNotification.Error(error);
         }
     }
 }
