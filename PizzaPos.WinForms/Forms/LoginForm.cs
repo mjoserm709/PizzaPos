@@ -80,11 +80,12 @@ public partial class LoginForm : Form
                     var authResult = dynamicResult.Data;
                     var token = authResult.GetProperty("token").GetString();
                     var roles = authResult.GetProperty("roles").EnumerateArray().Select(r => r.GetString()!).ToList();
+                    var fullName = authResult.GetProperty("fullName").GetString() ?? username;
 
-                    ToastNotification.Success($"Bienvenido, {username}");
+                    ToastNotification.Success($"Bienvenido, {fullName}");
 
                     // Navegar al formulario principal
-                    var mainForm = new MainForm(username, roles, token!);
+                    var mainForm = new MainForm(fullName, roles, token!);
                     
                     mainForm.FormClosed += (s, args) => {
                         if (mainForm.IsLoggingOut)

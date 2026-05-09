@@ -28,7 +28,7 @@ partial class SidebarControl
         // 
         this.lblMenu.AutoSize = true;
         this.lblMenu.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-        this.lblMenu.ForeColor = System.Drawing.Color.Gray;
+        this.lblMenu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
         this.lblMenu.Location = new System.Drawing.Point(15, 20);
         this.lblMenu.Name = "lblMenu";
         this.lblMenu.Size = new System.Drawing.Size(51, 19);
@@ -86,7 +86,7 @@ partial class SidebarControl
         // btnManageUsers
         // 
         this.btnManageUsers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.btnManageUsers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+        this.btnManageUsers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
         this.btnManageUsers.Location = new System.Drawing.Point(10, 260);
         this.btnManageUsers.Name = "btnManageUsers";
         this.btnManageUsers.Size = new System.Drawing.Size(180, 40);
@@ -98,7 +98,7 @@ partial class SidebarControl
         // btnSecurity
         // 
         this.btnSecurity.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.btnSecurity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+        this.btnSecurity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
         this.btnSecurity.Location = new System.Drawing.Point(10, 305);
         this.btnSecurity.Name = "btnSecurity";
         this.btnSecurity.Size = new System.Drawing.Size(180, 40);
@@ -111,7 +111,7 @@ partial class SidebarControl
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(51)))), ((int)(((byte)(23)))));
         this.Controls.Add(this.btnSecurity);
         this.Controls.Add(this.btnManageUsers);
         this.Controls.Add(this.btnSettings);

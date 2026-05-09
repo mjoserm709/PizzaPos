@@ -5,7 +5,7 @@ namespace PizzaPos.WinForms.Forms;
 
 public partial class MainForm : Form
 {
-    private readonly string _username;
+    private readonly string _userDisplayName;
     private readonly List<string> _roles;
     private readonly string _token;
 
@@ -15,10 +15,10 @@ public partial class MainForm : Form
 
     public bool IsLoggingOut { get; private set; } = false;
 
-    public MainForm(string username, List<string> roles, string token)
+    public MainForm(string userDisplayName, List<string> roles, string token)
     {
         InitializeComponent();
-        _username = username;
+        _userDisplayName = userDisplayName;
         _roles = roles;
         _token = token;
         
@@ -30,7 +30,7 @@ public partial class MainForm : Form
         bool isAdmin = _roles.Contains("Admin");
 
         // Header
-        _header = new HeaderControl(_username, _roles);
+        _header = new HeaderControl(_userDisplayName, _roles);
         _header.Dock = DockStyle.Top;
         _header.LogoutClick += (s, e) => {
             IsLoggingOut = true;

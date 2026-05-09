@@ -41,7 +41,7 @@ partial class LoginForm
         // 
         // chkRememberUser
         // 
-        this.chkRememberUser.AutoSize = true;
+        this.chkRememberUser.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(90)))), ((int)(((byte)(39)))));
         this.chkRememberUser.Location = new System.Drawing.Point(100, 250);
         this.chkRememberUser.Name = "chkRememberUser";
         this.chkRememberUser.Size = new System.Drawing.Size(120, 19);
@@ -51,7 +51,7 @@ partial class LoginForm
         // 
         // btnLogin
         // 
-        this.btnLogin.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+        this.btnLogin.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(90)))), ((int)(((byte)(39)))));
         this.btnLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnLogin.ForeColor = System.Drawing.Color.White;
         this.btnLogin.Location = new System.Drawing.Point(100, 290);
@@ -65,18 +65,22 @@ partial class LoginForm
         // lblUsername
         // 
         this.lblUsername.AutoSize = true;
+        this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+        this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(90)))), ((int)(((byte)(39)))));
         this.lblUsername.Location = new System.Drawing.Point(100, 130);
         this.lblUsername.Name = "lblUsername";
-        this.lblUsername.Size = new System.Drawing.Size(50, 15);
+        this.lblUsername.Size = new System.Drawing.Size(52, 15);
         this.lblUsername.TabIndex = 3;
         this.lblUsername.Text = "Usuario:";
         // 
         // lblPassword
         // 
         this.lblPassword.AutoSize = true;
+        this.lblPassword.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+        this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(90)))), ((int)(((byte)(39)))));
         this.lblPassword.Location = new System.Drawing.Point(100, 200);
         this.lblPassword.Name = "lblPassword";
-        this.lblPassword.Size = new System.Drawing.Size(70, 15);
+        this.lblPassword.Size = new System.Drawing.Size(72, 15);
         this.lblPassword.TabIndex = 4;
         this.lblPassword.Text = "Contraseña:";
         // 
@@ -92,7 +96,7 @@ partial class LoginForm
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.BackColor = System.Drawing.Color.White;
+        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(239)))), ((int)(((byte)(218)))));
         this.ClientSize = new System.Drawing.Size(450, 450);
         this.Controls.Add(this.chkRememberUser);
         this.Controls.Add(this.lblStatus);
@@ -105,7 +109,7 @@ partial class LoginForm
         this.MaximizeBox = false;
         this.Name = "LoginForm";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "Pizza POS - Login";
+        this.Text = "Pizza POS - Acceso";
         this.Load += new System.EventHandler(this.LoginForm_Load);
         this.ResumeLayout(false);
         this.PerformLayout();

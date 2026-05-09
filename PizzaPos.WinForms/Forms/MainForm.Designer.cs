@@ -20,7 +20,7 @@ partial class MainForm
         // 
         // pnlContent
         // 
-        this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+        this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(239)))), ((int)(((byte)(218)))));
         this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
         this.pnlContent.Location = new System.Drawing.Point(0, 0);
         this.pnlContent.Name = "pnlContent";
@@ -31,7 +31,7 @@ partial class MainForm
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(239)))), ((int)(((byte)(218)))));
         this.ClientSize = new System.Drawing.Size(1350, 720);
         this.Controls.Add(this.pnlContent);
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

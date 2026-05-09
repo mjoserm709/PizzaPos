@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Net.Http.Headers;
 using PizzaPos.WinForms.Models;
 using PizzaPos.WinForms.Utils;
+using System.ComponentModel;
 
 namespace PizzaPos.WinForms.UserControls.Admin;
 
@@ -12,6 +13,7 @@ public partial class UserManagementControl : UserControl
     private static readonly HttpClient _httpClient = new HttpClient();
     private int? _selectedUserId;
     private List<UserResponse> _usersList = new();
+    private BindingSource _bindingSource = new BindingSource();
 
     public UserManagementControl(string token)
     {
@@ -19,7 +21,9 @@ public partial class UserManagementControl : UserControl
         _token = token;
         txtIdentity.TextChanged += txtIdentity_TextChanged;
         
-        // Load data when control is created
+        dgvUsers.AutoGenerateColumns = true;
+        dgvUsers.DataSource = _bindingSource;
+
         this.Load += async (s, e) => {
             await LoadRolesAndPermissions();
             await LoadUsers();
@@ -56,10 +60,7 @@ public partial class UserManagementControl : UserControl
                 }
             }
         }
-        catch (Exception ex)
-        {
-            ToastNotification.Error($"Error cargando datos: {ex.Message}");
-        }
+        catch (Exception ex) { ToastNotification.Error($"Error: {ex.Message}"); }
     }
 
     private async Task LoadUsers()
@@ -76,37 +77,104 @@ public partial class UserManagementControl : UserControl
                 if (dynamicResult != null && dynamicResult.Success && dynamicResult.Data != null)
                 {
                     _usersList = dynamicResult.Data;
-                    dgvUsers.DataSource = _usersList.Select(u => new {
-                        u.Id,
-                        Usuario = u.Username,
-                        Nombre = u.FullName,
-                        Identidad = u.IdentityNumber,
-                        Activo = u.IsActive ? "Sí" : "No",
-                        Creado = u.CreatedAt.ToString("g"),
-                        CreadoPor = u.CreatedBy,
-                        Modificado = u.UpdatedAt?.ToString("g") ?? "-",
-                        ModificadoPor = u.UpdatedBy ?? "-",
-                        Roles = string.Join(", ", u.Roles)
-                    }).ToList();
-                    
-                    if (dgvUsers.Columns.Count > 0)
-                    {
-                        dgvUsers.Columns["Roles"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    }
+                    UpdateGrid();
                 }
             }
         }
-        catch (Exception ex)
-        {
-            ToastNotification.Error($"Error cargando usuarios: {ex.Message}");
-        }
+        catch (Exception ex) { ToastNotification.Error($"Error: {ex.Message}"); }
     }
-    
-    public record UserResponse(int Id, string Username, string FullName, string IdentityNumber, bool IsActive, DateTime CreatedAt, string CreatedBy, DateTime? UpdatedAt, string? UpdatedBy, List<string> Roles, List<string> Permissions);
 
-    private void dgvUsers_SelectionChanged(object sender, EventArgs e)
+    private void UpdateGrid(string filter = "")
     {
-        if (dgvUsers.CurrentRow != null && dgvUsers.CurrentRow.Selected)
+        var displayList = _usersList
+            .Where(u => string.IsNullOrEmpty(filter) || 
+                       u.Username.Contains(filter, StringComparison.OrdinalIgnoreCase) || 
+                       u.FullName.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            .Select(u => new {
+                u.Id,
+                Usuario = u.Username,
+                Nombre = u.FullName,
+                Identidad = u.IdentityNumber,
+                Activo = u.IsActive ? "Sí" : "No",
+                Creado = u.CreatedAt.ToString("g"),
+                Por = u.CreatedBy,
+                Modificado = u.UpdatedAt?.ToString("g") ?? "-",
+                ModPor = u.UpdatedBy ?? "-",
+                Roles = string.Join(", ", u.Roles)
+            }).ToList();
+
+        // Forzar limpieza para evitar que el grid mantenga datos viejos
+        _bindingSource.DataSource = null;
+        _bindingSource.DataSource = new BindingList<object>(displayList.Cast<object>().ToList());
+        dgvUsers.DataSource = _bindingSource;
+        
+        if (dgvUsers.Columns.Count > 0)
+        {
+            dgvUsers.Columns["Id"].Visible = false;
+            dgvUsers.Columns["Roles"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+        }
+        _bindingSource.ResetBindings(false);
+    }
+
+    private void txtSearch_TextChanged(object sender, EventArgs e)
+    {
+        UpdateGrid(txtSearch.Text);
+    }
+
+    private async void btnToggleStatus_Click(object sender, EventArgs e)
+    {
+        if (dgvUsers.CurrentRow != null)
+        {
+            var id = (int)dgvUsers.CurrentRow.Cells["Id"].Value;
+            var user = _usersList.FirstOrDefault(u => u.Id == id);
+            if (user != null)
+            {
+                bool newStatus = !user.IsActive;
+                string statusText = newStatus ? "activar" : "desactivar";
+                
+                var statusData = new
+                {
+                    userId = user.Id,
+                    isActive = newStatus
+                };
+
+                try
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+                    var content = new StringContent(JsonSerializer.Serialize(statusData), Encoding.UTF8, "application/json");
+                    
+                    // El API usa PATCH para el cambio de estado específico
+                    var response = await _httpClient.PatchAsync("http://localhost:5267/api/users/status", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        ToastNotification.Success($"Usuario '{user.Username}' {(newStatus ? "activado" : "desactivado")} correctamente.");
+                        await LoadUsers();
+                    }
+                    else 
+                    { 
+                        var errorJson = await response.Content.ReadAsStringAsync();
+                        ToastNotification.Error($"Error del servidor: {response.StatusCode}"); 
+                    }
+                }
+                catch (Exception ex) { ToastNotification.Error($"Error de conexión: {ex.Message}"); }
+            }
+        }
+        else { ToastNotification.Info("Seleccione un usuario de la lista."); }
+    }
+
+    private void btnNew_Click(object sender, EventArgs e)
+    {
+        ClearForm();
+        lblTitleForm.Text = "Crear Nuevo Usuario";
+        btnSave.Text = "Guardar Usuario";
+        pnlList.Visible = false;
+        pnlForm.Visible = true;
+    }
+
+    private void btnEdit_Click(object sender, EventArgs e)
+    {
+        if (dgvUsers.CurrentRow != null)
         {
             var id = (int)dgvUsers.CurrentRow.Cells["Id"].Value;
             var user = _usersList.FirstOrDefault(u => u.Id == id);
@@ -126,15 +194,19 @@ public partial class UserManagementControl : UserControl
                 for (int i = 0; i < clbPermissions.Items.Count; i++)
                     clbPermissions.SetItemChecked(i, user.Permissions.Contains(clbPermissions.Items[i]?.ToString() ?? string.Empty));
 
-                lblTitle.Text = "Editar Usuario";
+                lblTitleForm.Text = "Editar Usuario";
                 btnSave.Text = "Actualizar Usuario";
+                pnlList.Visible = false;
+                pnlForm.Visible = true;
             }
         }
+        else { ToastNotification.Info("Seleccione un usuario para editar."); }
     }
 
-    private void btnNew_Click(object sender, EventArgs e)
+    private void btnCancel_Click(object sender, EventArgs e)
     {
-        ClearForm();
+        pnlForm.Visible = false;
+        pnlList.Visible = true;
     }
 
     private void ClearForm()
@@ -148,9 +220,6 @@ public partial class UserManagementControl : UserControl
         txtConfirmPassword.Clear();
         for (int i = 0; i < clbRoles.Items.Count; i++) clbRoles.SetItemChecked(i, false);
         for (int i = 0; i < clbPermissions.Items.Count; i++) clbPermissions.SetItemChecked(i, false);
-        lblTitle.Text = "Crear Nuevo Usuario";
-        btnSave.Text = "Guardar Usuario";
-        if (dgvUsers.CurrentRow != null) dgvUsers.CurrentRow.Selected = false;
     }
 
     private async void btnSave_Click(object sender, EventArgs e)
@@ -176,18 +245,10 @@ public partial class UserManagementControl : UserControl
             permissionNames = permsList
         };
 
-        if (string.IsNullOrEmpty(userData.username) || 
-            string.IsNullOrEmpty(userData.fullName) || 
-            string.IsNullOrEmpty(userData.identityNumber) ||
-            (_selectedUserId == null && string.IsNullOrEmpty(userData.password)))
+        if (string.IsNullOrEmpty(userData.username) || string.IsNullOrEmpty(userData.fullName) || 
+            string.IsNullOrEmpty(userData.identityNumber) || (_selectedUserId == null && string.IsNullOrEmpty(userData.password)))
         {
             ToastNotification.Error("Complete todos los campos requeridos.");
-            return;
-        }
-
-        if (userData.identityNumber.Length != 15)
-        {
-            ToastNotification.Error("Identidad debe tener 15 caracteres (XXXX-XXXX-XXXXX).");
             return;
         }
 
@@ -196,52 +257,31 @@ public partial class UserManagementControl : UserControl
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var content = new StringContent(JsonSerializer.Serialize(userData), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response;
-            if (_selectedUserId == null)
-            {
-                response = await _httpClient.PostAsync("http://localhost:5267/api/users", content);
-            }
-            else
-            {
-                response = await _httpClient.PutAsync("http://localhost:5267/api/users", content);
-            }
+            HttpResponseMessage response = _selectedUserId == null 
+                ? await _httpClient.PostAsync("http://localhost:5267/api/users", content)
+                : await _httpClient.PutAsync("http://localhost:5267/api/users", content);
 
             if (response.IsSuccessStatusCode)
             {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<string>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                
-                string action = _selectedUserId == null ? "creado" : "actualizado";
-                ToastNotification.Success($"El usuario '{userData.username}' ha sido {action} correctamente.");
-                
-                ClearForm();
+                ToastNotification.Success($"Usuario '{userData.username}' guardado correctamente.");
+                pnlForm.Visible = false;
+                pnlList.Visible = true;
                 await LoadUsers();
             }
             else
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<string>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                
-                string errorMessage = dynamicResult?.Message ?? "Error en la operación";
-                if (dynamicResult?.Errors != null && dynamicResult.Errors.Any())
-                {
-                    errorMessage = string.Join(" | ", dynamicResult.Errors);
-                }
-                
-                ToastNotification.Error(errorMessage);
+                ToastNotification.Error(dynamicResult?.Message ?? "Error en la operación");
             }
         }
-        catch (Exception ex)
-        {
-            ToastNotification.Error($"Error de conexión: {ex.Message}");
-        }
+        catch (Exception ex) { ToastNotification.Error($"Error: {ex.Message}"); }
     }
 
     private void txtIdentity_TextChanged(object sender, EventArgs e)
     {
         string text = txtIdentity.Text.Replace("-", "");
         if (text.Length > 13) text = text.Substring(0, 13);
-        
         string formatted = "";
         for (int i = 0; i < text.Length; i++)
         {
@@ -254,11 +294,11 @@ public partial class UserManagementControl : UserControl
             int selectionStart = txtIdentity.SelectionStart;
             int oldLength = txtIdentity.Text.Length;
             txtIdentity.Text = formatted;
-            
-            // Adjust cursor position
             int newLength = formatted.Length;
             int newSelectionStart = selectionStart + (newLength - oldLength);
             txtIdentity.SelectionStart = Math.Max(0, Math.Min(newSelectionStart, newLength));
         }
     }
+
+    public record UserResponse(int Id, string Username, string FullName, string IdentityNumber, bool IsActive, DateTime CreatedAt, string CreatedBy, DateTime? UpdatedAt, string? UpdatedBy, List<string> Roles, List<string> Permissions);
 }

@@ -32,6 +32,6 @@ public class LoginService : ILoginService
             .Distinct()
             .ToList();
 
-        return new LoginResponse(token, user.Username, roles, permissions);
+        return new LoginResponse(token, user.Username, user.FullName, roles, permissions);
     }
 }

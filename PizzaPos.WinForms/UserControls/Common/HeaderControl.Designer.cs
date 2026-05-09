@@ -60,7 +60,7 @@ partial class HeaderControl
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(90)))), ((int)(((byte)(39)))));
         this.Controls.Add(this.btnLogout);
         this.Controls.Add(this.lblUserInfo);
         this.Controls.Add(this.lblSystemName);
