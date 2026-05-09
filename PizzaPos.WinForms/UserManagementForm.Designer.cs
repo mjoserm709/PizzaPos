@@ -29,6 +29,12 @@ partial class UserManagementForm
         this.btnSave = new System.Windows.Forms.Button();
         this.dgvUsers = new System.Windows.Forms.DataGridView();
         this.lblUserList = new System.Windows.Forms.Label();
+        this.lblFullName = new System.Windows.Forms.Label();
+        this.txtFullName = new System.Windows.Forms.TextBox();
+        this.lblIdentity = new System.Windows.Forms.Label();
+        this.txtIdentity = new System.Windows.Forms.TextBox();
+        this.btnNew = new System.Windows.Forms.Button();
+        this.chkIsActive = new System.Windows.Forms.CheckBox();
         ((System.ComponentModel.ISupportInitialize)(this.dgvUsers)).BeginInit();
         this.SuspendLayout();
         // 
@@ -128,13 +134,68 @@ partial class UserManagementForm
         // 
         // btnSave
         // 
-        this.btnSave.Location = new System.Drawing.Point(110, 200);
+        this.btnSave.Location = new System.Drawing.Point(110, 310);
         this.btnSave.Name = "btnSave";
         this.btnSave.Size = new System.Drawing.Size(150, 35);
         this.btnSave.TabIndex = 11;
         this.btnSave.Text = "Guardar Usuario";
         this.btnSave.UseVisualStyleBackColor = true;
         this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+        // 
+        // lblFullName
+        // 
+        this.lblFullName.AutoSize = true;
+        this.lblFullName.Location = new System.Drawing.Point(25, 190);
+        this.lblFullName.Name = "lblFullName";
+        this.lblFullName.Size = new System.Drawing.Size(54, 15);
+        this.lblFullName.TabIndex = 14;
+        this.lblFullName.Text = "Nombre:";
+        // 
+        // txtFullName
+        // 
+        this.txtFullName.Location = new System.Drawing.Point(110, 187);
+        this.txtFullName.Name = "txtFullName";
+        this.txtFullName.Size = new System.Drawing.Size(150, 23);
+        this.txtFullName.TabIndex = 15;
+        // 
+        // lblIdentity
+        // 
+        this.lblIdentity.AutoSize = true;
+        this.lblIdentity.Location = new System.Drawing.Point(25, 230);
+        this.lblIdentity.Name = "lblIdentity";
+        this.lblIdentity.Size = new System.Drawing.Size(60, 15);
+        this.lblIdentity.TabIndex = 16;
+        this.lblIdentity.Text = "Identidad:";
+        // 
+        // txtIdentity
+        // 
+        this.txtIdentity.Location = new System.Drawing.Point(110, 227);
+        this.txtIdentity.MaxLength = 15;
+        this.txtIdentity.Name = "txtIdentity";
+        this.txtIdentity.Size = new System.Drawing.Size(150, 23);
+        this.txtIdentity.TabIndex = 17;
+        // 
+        // btnNew
+        // 
+        this.btnNew.Location = new System.Drawing.Point(25, 310);
+        this.btnNew.Name = "btnNew";
+        this.btnNew.Size = new System.Drawing.Size(70, 35);
+        this.btnNew.TabIndex = 18;
+        this.btnNew.Text = "Nuevo";
+        this.btnNew.UseVisualStyleBackColor = true;
+        this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
+        // 
+        // chkIsActive
+        // 
+        this.chkIsActive.AutoSize = true;
+        this.chkIsActive.Checked = true;
+        this.chkIsActive.CheckState = System.Windows.Forms.CheckState.Checked;
+        this.chkIsActive.Location = new System.Drawing.Point(110, 265);
+        this.chkIsActive.Name = "chkIsActive";
+        this.chkIsActive.Size = new System.Drawing.Size(60, 19);
+        this.chkIsActive.TabIndex = 19;
+        this.chkIsActive.Text = "Activo";
+        this.chkIsActive.UseVisualStyleBackColor = true;
         // 
         // dgvUsers
         // 
@@ -145,8 +206,9 @@ partial class UserManagementForm
         this.dgvUsers.Name = "dgvUsers";
         this.dgvUsers.ReadOnly = true;
         this.dgvUsers.RowTemplate.Height = 25;
-        this.dgvUsers.Size = new System.Drawing.Size(350, 240);
+        this.dgvUsers.Size = new System.Drawing.Size(350, 340);
         this.dgvUsers.TabIndex = 12;
+        this.dgvUsers.SelectionChanged += new System.EventHandler(this.dgvUsers_SelectionChanged);
         // 
         // lblUserList
         // 
@@ -162,7 +224,13 @@ partial class UserManagementForm
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(950, 350);
+        this.ClientSize = new System.Drawing.Size(950, 400);
+        this.Controls.Add(this.chkIsActive);
+        this.Controls.Add(this.btnNew);
+        this.Controls.Add(this.txtIdentity);
+        this.Controls.Add(this.lblIdentity);
+        this.Controls.Add(this.txtFullName);
+        this.Controls.Add(this.lblFullName);
         this.Controls.Add(this.lblUserList);
         this.Controls.Add(this.dgvUsers);
         this.Controls.Add(this.btnSave);
@@ -199,4 +267,10 @@ partial class UserManagementForm
     private System.Windows.Forms.Button btnSave;
     private System.Windows.Forms.DataGridView dgvUsers;
     private System.Windows.Forms.Label lblUserList;
+    private System.Windows.Forms.Label lblFullName;
+    private System.Windows.Forms.TextBox txtFullName;
+    private System.Windows.Forms.Label lblIdentity;
+    private System.Windows.Forms.TextBox txtIdentity;
+    private System.Windows.Forms.Button btnNew;
+    private System.Windows.Forms.CheckBox chkIsActive;
 }

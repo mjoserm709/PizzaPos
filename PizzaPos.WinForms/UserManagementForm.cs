@@ -8,11 +8,14 @@ public partial class UserManagementForm : Form
 {
     private readonly string _token;
     private static readonly HttpClient _httpClient = new HttpClient();
+    private int? _selectedUserId;
+    private List<UserResponse> _usersList = new();
 
     public UserManagementForm(string token)
     {
         InitializeComponent();
         _token = token;
+        txtIdentity.TextChanged += txtIdentity_TextChanged;
     }
 
     private async void UserManagementForm_Load(object sender, EventArgs e)
@@ -52,10 +55,17 @@ public partial class UserManagementForm : Form
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var users = JsonSerializer.Deserialize<List<UserResponse>>(usersJson, options);
 
-            dgvUsers.DataSource = users?.Select(u => new {
+            _usersList = users ?? new List<UserResponse>();
+            dgvUsers.DataSource = _usersList.Select(u => new {
                 u.Id,
                 Usuario = u.Username,
+                Nombre = u.FullName,
+                Identidad = u.IdentityNumber,
                 Activo = u.IsActive ? "Sí" : "No",
+                Creado = u.CreatedAt.ToString("g"),
+                CreadoPor = u.CreatedBy,
+                Modificado = u.UpdatedAt?.ToString("g") ?? "-",
+                ModificadoPor = u.UpdatedBy ?? "-",
                 Roles = string.Join(", ", u.Roles)
             }).ToList();
             
@@ -70,7 +80,56 @@ public partial class UserManagementForm : Form
         }
     }
     
-    public record UserResponse(int Id, string Username, bool IsActive, List<string> Roles);
+    public record UserResponse(int Id, string Username, string FullName, string IdentityNumber, bool IsActive, DateTime CreatedAt, string CreatedBy, DateTime? UpdatedAt, string? UpdatedBy, List<string> Roles, List<string> Permissions);
+
+    private void dgvUsers_SelectionChanged(object sender, EventArgs e)
+    {
+        if (dgvUsers.CurrentRow != null && dgvUsers.CurrentRow.Selected)
+        {
+            var id = (int)dgvUsers.CurrentRow.Cells["Id"].Value;
+            var user = _usersList.FirstOrDefault(u => u.Id == id);
+            if (user != null)
+            {
+                _selectedUserId = user.Id;
+                txtNewUsername.Text = user.Username;
+                txtFullName.Text = user.FullName;
+                txtIdentity.Text = user.IdentityNumber;
+                chkIsActive.Checked = user.IsActive;
+                txtNewPassword.Clear();
+                txtConfirmPassword.Clear();
+                
+                for (int i = 0; i < clbRoles.Items.Count; i++)
+                    clbRoles.SetItemChecked(i, user.Roles.Contains(clbRoles.Items[i]?.ToString() ?? string.Empty));
+                
+                for (int i = 0; i < clbPermissions.Items.Count; i++)
+                    clbPermissions.SetItemChecked(i, user.Permissions.Contains(clbPermissions.Items[i]?.ToString() ?? string.Empty));
+
+                lblTitle.Text = "Editar Usuario";
+                btnSave.Text = "Actualizar Usuario";
+            }
+        }
+    }
+
+    private void btnNew_Click(object sender, EventArgs e)
+    {
+        ClearForm();
+    }
+
+    private void ClearForm()
+    {
+        _selectedUserId = null;
+        txtNewUsername.Clear();
+        txtFullName.Clear();
+        txtIdentity.Clear();
+        chkIsActive.Checked = true;
+        txtNewPassword.Clear();
+        txtConfirmPassword.Clear();
+        for (int i = 0; i < clbRoles.Items.Count; i++) clbRoles.SetItemChecked(i, false);
+        for (int i = 0; i < clbPermissions.Items.Count; i++) clbPermissions.SetItemChecked(i, false);
+        lblTitle.Text = "Crear Nuevo Usuario";
+        btnSave.Text = "Guardar Usuario";
+        if (dgvUsers.CurrentRow != null) dgvUsers.CurrentRow.Selected = false;
+    }
 
     private async void btnSave_Click(object sender, EventArgs e)
     {
@@ -85,15 +144,28 @@ public partial class UserManagementForm : Form
 
         var userData = new
         {
+            id = _selectedUserId ?? 0,
             username = txtNewUsername.Text,
             password = txtNewPassword.Text,
+            fullName = txtFullName.Text,
+            identityNumber = txtIdentity.Text,
+            isActive = chkIsActive.Checked,
             roleNames = rolesList,
             permissionNames = permsList
         };
 
-        if (string.IsNullOrEmpty(userData.username) || string.IsNullOrEmpty(userData.password))
+        if (string.IsNullOrEmpty(userData.username) || 
+            string.IsNullOrEmpty(userData.fullName) || 
+            string.IsNullOrEmpty(userData.identityNumber) ||
+            (_selectedUserId == null && string.IsNullOrEmpty(userData.password)))
         {
-            MessageBox.Show("Por favor complete todos los campos.");
+            MessageBox.Show("Por favor complete todos los campos requeridos.");
+            return;
+        }
+
+        if (userData.identityNumber.Length != 15)
+        {
+            MessageBox.Show("La identidad debe tener exactamente 15 caracteres (formato: XXXX-XXXX-XXXXX).");
             return;
         }
 
@@ -102,27 +174,56 @@ public partial class UserManagementForm : Form
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var content = new StringContent(JsonSerializer.Serialize(userData), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:5267/api/users", content);
+            HttpResponseMessage response;
+            if (_selectedUserId == null)
+            {
+                response = await _httpClient.PostAsync("http://localhost:5267/api/users", content);
+            }
+            else
+            {
+                response = await _httpClient.PutAsync("http://localhost:5267/api/users", content);
+            }
 
             if (response.IsSuccessStatusCode)
             {
-                MessageBox.Show("Usuario creado exitosamente.");
-                txtNewUsername.Clear();
-                txtNewPassword.Clear();
-                txtConfirmPassword.Clear();
-                for (int i = 0; i < clbRoles.Items.Count; i++) clbRoles.SetItemChecked(i, false);
-                for (int i = 0; i < clbPermissions.Items.Count; i++) clbPermissions.SetItemChecked(i, false);
+                MessageBox.Show(_selectedUserId == null ? "Usuario creado exitosamente." : "Usuario actualizado exitosamente.");
+                ClearForm();
                 await LoadUsers();
             }
             else
             {
                 var error = await response.Content.ReadAsStringAsync();
-                MessageBox.Show($"Error al crear usuario: {error}");
+                MessageBox.Show($"Error: {error}");
             }
         }
         catch (Exception ex)
         {
             MessageBox.Show($"Error de conexión: {ex.Message}");
+        }
+    }
+
+    private void txtIdentity_TextChanged(object sender, EventArgs e)
+    {
+        string text = txtIdentity.Text.Replace("-", "");
+        if (text.Length > 13) text = text.Substring(0, 13);
+        
+        string formatted = "";
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (i == 4 || i == 8) formatted += "-";
+            formatted += text[i];
+        }
+
+        if (txtIdentity.Text != formatted)
+        {
+            int selectionStart = txtIdentity.SelectionStart;
+            int oldLength = txtIdentity.Text.Length;
+            txtIdentity.Text = formatted;
+            
+            // Adjust cursor position
+            int newLength = formatted.Length;
+            int newSelectionStart = selectionStart + (newLength - oldLength);
+            txtIdentity.SelectionStart = Math.Max(0, Math.Min(newSelectionStart, newLength));
         }
     }
 }

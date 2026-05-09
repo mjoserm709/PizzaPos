@@ -28,9 +28,22 @@ public class RoleRepository : IRoleRepository
             .ToListAsync();
     }
 
+    public async Task<Role?> GetByIdAsync(int id)
+    {
+        return await _context.Roles
+            .Include(r => r.Permissions)
+            .FirstOrDefaultAsync(r => r.Id == id);
+    }
+
     public async Task AddAsync(Role role)
     {
         await _context.Roles.AddAsync(role);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Role role)
+    {
+        _context.Roles.Update(role);
         await _context.SaveChangesAsync();
     }
 }

@@ -55,8 +55,24 @@ public class PizzaPosDbContext : DbContext
             );
             
         // Initial Seed
-        modelBuilder.Entity<Role>().HasData(new Role { Id = 1, Name = "Admin" });
-        modelBuilder.Entity<User>().HasData(new User { Id = 1, Username = "admin", PasswordHash = "admin123", IsActive = true });
+        modelBuilder.Entity<Role>().HasData(new Role 
+        { 
+            Id = 1, 
+            Name = "Admin",
+            CreatedAt = DateTime.Now,
+            CreatedBy = "System",
+            IsActive = true
+        });
+        modelBuilder.Entity<User>().HasData(new User { 
+            Id = 1, 
+            Username = "admin", 
+            PasswordHash = "admin123", 
+            FullName = "Administrador Sistema",
+            IdentityNumber = "0000-0000-00000",
+            CreatedAt = DateTime.Now,
+            CreatedBy = "System",
+            IsActive = true 
+        });
 
         // Relación Admin - Usuario
         modelBuilder.Entity("Admin_UserRoles").HasData(new { UserId = 1, RoleId = 1 });

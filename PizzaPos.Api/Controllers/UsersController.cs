@@ -28,8 +28,22 @@ public class UsersController : ControllerBase
     {
         try
         {
-            await _userService.CreateUserAsync(request);
+            await _userService.CreateUserAsync(request, User.Identity?.Name ?? "System");
             return Ok(new { message = "Usuario creado exitosamente" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
+    {
+        try
+        {
+            await _userService.UpdateUserAsync(request, User.Identity?.Name ?? "System");
+            return Ok(new { message = "Usuario actualizado exitosamente" });
         }
         catch (Exception ex)
         {

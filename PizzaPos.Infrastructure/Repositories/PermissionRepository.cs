@@ -24,9 +24,20 @@ public class PermissionRepository : IPermissionRepository
         return await _context.Permissions.FirstOrDefaultAsync(p => p.Name == name);
     }
 
+    public async Task<Permission?> GetByIdAsync(int id)
+    {
+        return await _context.Permissions.FirstOrDefaultAsync(p => p.Id == id);
+    }
+
     public async Task AddAsync(Permission permission)
     {
         await _context.Permissions.AddAsync(permission);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Permission permission)
+    {
+        _context.Permissions.Update(permission);
         await _context.SaveChangesAsync();
     }
 }
