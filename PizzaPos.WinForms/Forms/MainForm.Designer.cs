@@ -20,19 +20,22 @@ partial class MainForm
         // 
         // pnlContent
         // 
-        this.pnlContent.BackColor = System.Drawing.Color.White;
+        this.pnlContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
         this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
         this.pnlContent.Location = new System.Drawing.Point(0, 0);
         this.pnlContent.Name = "pnlContent";
-        this.pnlContent.Size = new System.Drawing.Size(1250, 600);
+        this.pnlContent.Size = new System.Drawing.Size(1350, 720);
         this.pnlContent.TabIndex = 0;
         // 
         // MainForm
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(1250, 650);
+        this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+        this.ClientSize = new System.Drawing.Size(1350, 720);
         this.Controls.Add(this.pnlContent);
+        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+        this.MaximizeBox = false;
         this.Name = "MainForm";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "Pizza POS - Panel de Control";
