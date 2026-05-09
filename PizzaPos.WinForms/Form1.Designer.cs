@@ -28,43 +28,87 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
-        this.btnCheckStatus = new System.Windows.Forms.Button();
+        this.txtUsername = new System.Windows.Forms.TextBox();
+        this.txtPassword = new System.Windows.Forms.TextBox();
+        this.btnLogin = new System.Windows.Forms.Button();
+        this.lblUsername = new System.Windows.Forms.Label();
+        this.lblPassword = new System.Windows.Forms.Label();
         this.lblStatus = new System.Windows.Forms.Label();
         this.SuspendLayout();
         // 
-        // btnCheckStatus
+        // txtUsername
         // 
-        this.btnCheckStatus.Location = new System.Drawing.Point(12, 12);
-        this.btnCheckStatus.Name = "btnCheckStatus";
-        this.btnCheckStatus.Size = new System.Drawing.Size(150, 40);
-        this.btnCheckStatus.TabIndex = 0;
-        this.btnCheckStatus.Text = "Check API Status";
-        this.btnCheckStatus.UseVisualStyleBackColor = true;
-        this.btnCheckStatus.Click += new System.EventHandler(this.btnCheckStatus_Click);
+        this.txtUsername.Location = new System.Drawing.Point(120, 30);
+        this.txtUsername.Name = "txtUsername";
+        this.txtUsername.Size = new System.Drawing.Size(150, 23);
+        this.txtUsername.TabIndex = 0;
+        // 
+        // txtPassword
+        // 
+        this.txtPassword.Location = new System.Drawing.Point(120, 70);
+        this.txtPassword.Name = "txtPassword";
+        this.txtPassword.PasswordChar = '*';
+        this.txtPassword.Size = new System.Drawing.Size(150, 23);
+        this.txtPassword.TabIndex = 1;
+        // 
+        // btnLogin
+        // 
+        this.btnLogin.Location = new System.Drawing.Point(120, 110);
+        this.btnLogin.Name = "btnLogin";
+        this.btnLogin.Size = new System.Drawing.Size(150, 35);
+        this.btnLogin.TabIndex = 2;
+        this.btnLogin.Text = "Iniciar Sesión";
+        this.btnLogin.UseVisualStyleBackColor = true;
+        this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
+        // 
+        // lblUsername
+        // 
+        this.lblUsername.AutoSize = true;
+        this.lblUsername.Location = new System.Drawing.Point(30, 33);
+        this.lblUsername.Name = "lblUsername";
+        this.lblUsername.Size = new System.Drawing.Size(50, 15);
+        this.lblUsername.TabIndex = 3;
+        this.lblUsername.Text = "Usuario:";
+        // 
+        // lblPassword
+        // 
+        this.lblPassword.AutoSize = true;
+        this.lblPassword.Location = new System.Drawing.Point(30, 73);
+        this.lblPassword.Name = "lblPassword";
+        this.lblPassword.Size = new System.Drawing.Size(70, 15);
+        this.lblPassword.TabIndex = 4;
+        this.lblPassword.Text = "Contraseña:";
         // 
         // lblStatus
         // 
         this.lblStatus.AutoSize = true;
-        this.lblStatus.Location = new System.Drawing.Point(12, 65);
+        this.lblStatus.Location = new System.Drawing.Point(30, 160);
         this.lblStatus.Name = "lblStatus";
-        this.lblStatus.Size = new System.Drawing.Size(95, 15);
-        this.lblStatus.TabIndex = 1;
-        this.lblStatus.Text = "Status: Unknown";
+        this.lblStatus.Size = new System.Drawing.Size(0, 15);
+        this.lblStatus.TabIndex = 5;
         // 
         // Form1
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(400, 150);
+        this.ClientSize = new System.Drawing.Size(320, 200);
         this.Controls.Add(this.lblStatus);
-        this.Controls.Add(this.btnCheckStatus);
+        this.Controls.Add(this.lblPassword);
+        this.Controls.Add(this.lblUsername);
+        this.Controls.Add(this.btnLogin);
+        this.Controls.Add(this.txtPassword);
+        this.Controls.Add(this.txtUsername);
         this.Name = "Form1";
-        this.Text = "Pizza POS - Frontend";
+        this.Text = "Pizza POS - Login";
         this.ResumeLayout(false);
         this.PerformLayout();
     }
 
-    private System.Windows.Forms.Button btnCheckStatus;
+    private System.Windows.Forms.TextBox txtUsername;
+    private System.Windows.Forms.TextBox txtPassword;
+    private System.Windows.Forms.Button btnLogin;
+    private System.Windows.Forms.Label lblUsername;
+    private System.Windows.Forms.Label lblPassword;
     private System.Windows.Forms.Label lblStatus;
 
     #endregion
