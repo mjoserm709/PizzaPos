@@ -126,6 +126,13 @@ public partial class OrderManagementControl : UserControl
             BorderStyle = BorderStyle.FixedSingle
         };
 
+        // Alerta de Retraso: Si lleva más de 15 min en Pendiente/Confirmado
+        bool isDelayed = (order.StatusId <= 2) && (DateTime.Now - order.CreatedAt).TotalMinutes > 15;
+        if (isDelayed) {
+            panel.BackColor = Color.FromArgb(255, 235, 238); // Rojo muy suave
+            panel.BorderStyle = BorderStyle.FixedSingle;
+        }
+
         // Borde de color según estado
         var accentColor = GetStatusColor(order.StatusId);
         var pnlAccent = new Panel { Dock = DockStyle.Left, Width = 5, BackColor = accentColor };
@@ -166,8 +173,9 @@ public partial class OrderManagementControl : UserControl
         btnNext.FlatAppearance.BorderSize = 0;
         btnNext.Click += async (s, e) => await AdvanceOrder(order);
 
-        // Botón Cancelar (Solo en etapas iniciales)
-        if (order.StatusId <= 2)
+        // Botón Cancelar (Solo en etapas iniciales y antes de 10 min)
+        bool canCancel = order.StatusId <= 2 && (DateTime.Now - order.CreatedAt).TotalMinutes <= 10;
+        if (canCancel)
         {
             var btnCancel = new Button {
                 Text = "✖",
