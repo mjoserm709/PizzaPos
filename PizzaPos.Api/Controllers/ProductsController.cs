@@ -90,4 +90,18 @@ public class ProductsController : ControllerBase
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
+
+    [HttpGet("categories")]
+    public async Task<IActionResult> GetCategories()
+    {
+        var results = await _productRepository.GetCategoriesAsync();
+        return Ok(new { success = true, data = results });
+    }
+
+    [HttpGet("sizes")]
+    public async Task<IActionResult> GetSizes()
+    {
+        var results = await _productRepository.GetSizesAsync();
+        return Ok(new { success = true, data = results });
+    }
 }

@@ -48,24 +48,36 @@ partial class ProductManagementControl
         this.pnlActions.Size = new System.Drawing.Size(800, 80);
 
         // btnToggleProduct
+        this.btnToggleProduct.BackColor = System.Drawing.Color.FromArgb(26, 51, 23);
+        this.btnToggleProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.btnToggleProduct.ForeColor = System.Drawing.Color.White;
         this.btnToggleProduct.Location = new System.Drawing.Point(680, 40);
         this.btnToggleProduct.Name = "btnToggleProduct";
         this.btnToggleProduct.Size = new System.Drawing.Size(100, 30);
-        this.btnToggleProduct.Text = "Activar/Desact.";
+        this.btnToggleProduct.Text = "Activar/Des";
+        this.btnToggleProduct.UseVisualStyleBackColor = false;
         this.btnToggleProduct.Click += new System.EventHandler(this.btnToggleProduct_Click);
 
         // btnEditProduct
+        this.btnEditProduct.BackColor = System.Drawing.Color.FromArgb(26, 51, 23);
+        this.btnEditProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.btnEditProduct.ForeColor = System.Drawing.Color.White;
         this.btnEditProduct.Location = new System.Drawing.Point(570, 40);
         this.btnEditProduct.Name = "btnEditProduct";
         this.btnEditProduct.Size = new System.Drawing.Size(100, 30);
         this.btnEditProduct.Text = "Editar";
+        this.btnEditProduct.UseVisualStyleBackColor = false;
         this.btnEditProduct.Click += new System.EventHandler(this.btnEditProduct_Click);
 
         // btnNewProduct
+        this.btnNewProduct.BackColor = System.Drawing.Color.FromArgb(26, 51, 23);
+        this.btnNewProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.btnNewProduct.ForeColor = System.Drawing.Color.White;
         this.btnNewProduct.Location = new System.Drawing.Point(460, 40);
         this.btnNewProduct.Name = "btnNewProduct";
         this.btnNewProduct.Size = new System.Drawing.Size(100, 30);
-        this.btnNewProduct.Text = "Nuevo Producto";
+        this.btnNewProduct.Text = "Nuevo";
+        this.btnNewProduct.UseVisualStyleBackColor = false;
         this.btnNewProduct.Click += new System.EventHandler(this.btnNewProduct_Click);
 
         // lblTitle

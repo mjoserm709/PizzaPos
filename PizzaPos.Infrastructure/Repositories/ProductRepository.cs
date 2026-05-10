@@ -32,6 +32,12 @@ public class ProductRepository : IProductRepository
         _dbSet.Update(product);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<ProductCategory>> GetCategoriesAsync() => 
+        await _context.ProductCategories.Where(c => c.IsActive).ToListAsync();
+
+    public async Task<IEnumerable<ProductSize>> GetSizesAsync() => 
+        await _context.ProductSizes.Where(s => s.IsActive).ToListAsync();
 }
 
 public class OrderStatusRepository : IOrderStatusRepository

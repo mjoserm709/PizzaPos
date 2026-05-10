@@ -21,6 +21,10 @@ partial class ProductForm
         this.numPrice = new System.Windows.Forms.NumericUpDown();
         this.lblDescription = new System.Windows.Forms.Label();
         this.txtDescription = new System.Windows.Forms.TextBox();
+        this.lblCategory = new System.Windows.Forms.Label();
+        this.cmbCategory = new System.Windows.Forms.ComboBox();
+        this.lblSize = new System.Windows.Forms.Label();
+        this.cmbSize = new System.Windows.Forms.ComboBox();
         this.btnSave = new System.Windows.Forms.Button();
         this.btnCancel = new System.Windows.Forms.Button();
         ((System.ComponentModel.ISupportInitialize)(this.numPrice)).BeginInit();
@@ -56,25 +60,49 @@ partial class ProductForm
         this.txtDescription.Multiline = true;
         this.txtDescription.Size = new System.Drawing.Size(340, 60);
 
+        // lblCategory
+        this.lblCategory.Location = new System.Drawing.Point(20, 235);
+        this.lblCategory.Size = new System.Drawing.Size(100, 23);
+        this.lblCategory.Text = "Categoría:";
+
+        // cmbCategory
+        this.cmbCategory.Location = new System.Drawing.Point(20, 260);
+        this.cmbCategory.Size = new System.Drawing.Size(160, 23);
+        this.cmbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+
+        // lblSize
+        this.lblSize.Location = new System.Drawing.Point(200, 235);
+        this.lblSize.Size = new System.Drawing.Size(100, 23);
+        this.lblSize.Text = "Tamaño:";
+
+        // cmbSize
+        this.cmbSize.Location = new System.Drawing.Point(200, 260);
+        this.cmbSize.Size = new System.Drawing.Size(160, 23);
+        this.cmbSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+
         // btnSave
         this.btnSave.BackColor = System.Drawing.Color.FromArgb(26, 51, 23);
         this.btnSave.ForeColor = System.Drawing.Color.White;
-        this.btnSave.Location = new System.Drawing.Point(160, 240);
+        this.btnSave.Location = new System.Drawing.Point(160, 310);
         this.btnSave.Size = new System.Drawing.Size(100, 35);
         this.btnSave.Text = "Guardar";
         this.btnSave.UseVisualStyleBackColor = false;
         this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 
         // btnCancel
-        this.btnCancel.Location = new System.Drawing.Point(265, 240);
+        this.btnCancel.Location = new System.Drawing.Point(265, 310);
         this.btnCancel.Size = new System.Drawing.Size(100, 35);
         this.btnCancel.Text = "Cancelar";
         this.btnCancel.Click += (s, e) => this.Close();
 
         // ProductForm
-        this.ClientSize = new System.Drawing.Size(384, 300);
+        this.ClientSize = new System.Drawing.Size(384, 370);
         this.Controls.Add(this.btnCancel);
         this.Controls.Add(this.btnSave);
+        this.Controls.Add(this.cmbSize);
+        this.Controls.Add(this.lblSize);
+        this.Controls.Add(this.cmbCategory);
+        this.Controls.Add(this.lblCategory);
         this.Controls.Add(this.txtDescription);
         this.Controls.Add(this.lblDescription);
         this.Controls.Add(this.numPrice);
@@ -96,6 +124,10 @@ partial class ProductForm
     private System.Windows.Forms.NumericUpDown numPrice;
     private System.Windows.Forms.Label lblDescription;
     private System.Windows.Forms.TextBox txtDescription;
+    private System.Windows.Forms.Label lblCategory;
+    private System.Windows.Forms.ComboBox cmbCategory;
+    private System.Windows.Forms.Label lblSize;
+    private System.Windows.Forms.ComboBox cmbSize;
     private System.Windows.Forms.Button btnSave;
     private System.Windows.Forms.Button btnCancel;
 }

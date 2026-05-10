@@ -24,9 +24,9 @@ public partial class ProductManagementControl : UserControl
 
     private void ApplyPermissions()
     {
-        btnNewProduct.Enabled = _permissions.Contains("productos.create");
-        btnEditProduct.Enabled = _permissions.Contains("productos.update");
-        btnToggleProduct.Enabled = _permissions.Contains("productos.delete");
+        btnNewProduct.Enabled = _permissions.Contains("productos.manage");
+        btnEditProduct.Enabled = _permissions.Contains("productos.manage");
+        btnToggleProduct.Enabled = _permissions.Contains("productos.manage");
     }
 
     private async Task LoadProducts()
@@ -44,6 +44,12 @@ public partial class ProductManagementControl : UserControl
                 if (dgvProducts.Columns.Count > 0)
                 {
                     dgvProducts.Columns["Id"].Visible = false;
+                    dgvProducts.Columns["CategoryId"].Visible = false;
+                    dgvProducts.Columns["Category"].Visible = false;
+                    dgvProducts.Columns["SizeId"].Visible = false;
+                    dgvProducts.Columns["Size"].Visible = false;
+                    dgvProducts.Columns["Description"].Width = 200;
+                    
                     dgvProducts.Columns["Name"].HeaderText = "Producto";
                     dgvProducts.Columns["Name"].Width = 250;
                     dgvProducts.Columns["Price"].HeaderText = "Precio";

@@ -43,7 +43,7 @@ public class Product : BaseEntity
     public decimal Price { get; set; }
     public bool IsActive { get; set; } = true;
     
-    public ProductCategory Category { get; set; } = null!;
+    public ProductCategory? Category { get; set; }
     public ProductSize? Size { get; set; }
 }
 
@@ -63,10 +63,10 @@ public class Order : BaseEntity
     
     public string? Notes { get; set; }
 
-    public Customer Customer { get; set; } = null!;
+    public Customer? Customer { get; set; }
     public Address? Address { get; set; }
-    public OrderStatus Status { get; set; } = null!;
-    public PaymentMethod PaymentMethod { get; set; } = null!;
+    public OrderStatus? Status { get; set; }
+    public PaymentMethod? PaymentMethod { get; set; }
     public ICollection<OrderDetail> Details { get; set; } = new List<OrderDetail>();
 }
 
@@ -78,8 +78,8 @@ public class OrderDetail : BaseEntity
     public decimal UnitPrice { get; set; }
     public decimal Total { get; set; }
 
-    public Order Order { get; set; } = null!;
-    public Product Product { get; set; } = null!;
+    public Order? Order { get; set; }
+    public Product? Product { get; set; }
 }
 
 public class Delivery : BaseEntity
@@ -91,9 +91,9 @@ public class Delivery : BaseEntity
     public DateTime? DeliveredAt { get; set; }
     public string? Notes { get; set; }
 
-    public Order Order { get; set; } = null!;
+    public Order? Order { get; set; }
     public User? Courier { get; set; }
-    public DeliveryStatus DeliveryStatus { get; set; } = null!;
+    public DeliveryStatus? DeliveryStatus { get; set; }
 }
 
 public class Compensation : BaseEntity
@@ -105,6 +105,6 @@ public class Compensation : BaseEntity
     public bool IsRedeemed { get; set; }
     public DateTime? RedeemedAt { get; set; }
 
-    public Customer Customer { get; set; } = null!;
+    public Customer? Customer { get; set; }
     public Order? SourceOrder { get; set; }
 }

@@ -18,17 +18,54 @@ public partial class ProductForm : Form
         _token = token;
         _product = product;
         
-        if (_product != null)
+        this.Load += async (s, e) => await LoadFormData();
+    }
+
+    private async Task LoadFormData()
+    {
+        try
         {
-            this.Text = "Editar Producto";
-            txtName.Text = _product.Name;
-            numPrice.Value = _product.Price;
-            txtDescription.Text = _product.Description;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            
+            // Cargar Categorías
+            var catRes = await _httpClient.GetAsync("http://localhost:5267/api/products/categories");
+            if (catRes.IsSuccessStatusCode)
+            {
+                var json = await catRes.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DynamicResponse<List<ProductCategoryModel>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                cmbCategory.DataSource = result?.Data ?? new();
+                cmbCategory.DisplayMember = "Name";
+                cmbCategory.ValueMember = "Id";
+            }
+
+            // Cargar Tamaños
+            var sizeRes = await _httpClient.GetAsync("http://localhost:5267/api/products/sizes");
+            if (sizeRes.IsSuccessStatusCode)
+            {
+                var json = await sizeRes.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DynamicResponse<List<ProductSizeModel>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var sizes = result?.Data ?? new();
+                sizes.Insert(0, new ProductSizeModel { Id = 0, Name = "N/A" });
+                cmbSize.DataSource = sizes;
+                cmbSize.DisplayMember = "Name";
+                cmbSize.ValueMember = "Id";
+            }
+
+            if (_product != null)
+            {
+                this.Text = "Editar Producto";
+                txtName.Text = _product.Name;
+                numPrice.Value = _product.Price;
+                txtDescription.Text = _product.Description;
+                cmbCategory.SelectedValue = _product.CategoryId;
+                cmbSize.SelectedValue = _product.SizeId ?? 0;
+            }
+            else
+            {
+                this.Text = "Nuevo Producto";
+            }
         }
-        else
-        {
-            this.Text = "Nuevo Producto";
-        }
+        catch (Exception ex) { ToastNotification.Error("Error al cargar datos: " + ex.Message); }
     }
 
     private async void btnSave_Click(object sender, EventArgs e)
@@ -39,11 +76,13 @@ public partial class ProductForm : Form
             return;
         }
 
+        var sizeId = (int)cmbSize.SelectedValue!;
         var data = new {
             Name = txtName.Text,
             Price = numPrice.Value,
             Description = txtDescription.Text,
-            CategoryId = 1 // Por ahora fijo a la categoría principal
+            CategoryId = (int)cmbCategory.SelectedValue!,
+            SizeId = sizeId > 0 ? (int?)sizeId : null
         };
 
         try
