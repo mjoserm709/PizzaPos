@@ -1,16 +1,13 @@
 /*
 ================================================================================
-PIZZA POS - SQL SERVER FULL DATABASE SCHEMA
+PIZZA POS - CONSOLIDATED SQL SERVER SCRIPT
 ================================================================================
-Este script migra la base de datos de SQLite a SQL Server.
-Incluye:
-1. Creación de Tablas (Schema)
-2. Restricciones de Llaves Foráneas
-3. Datos Iniciales (Seed Data)
+Este script contiene el esquema completo y los datos iniciales optimizados.
+Compatible con SQL Server.
 ================================================================================
 */
 
--- 1. CLEANUP (Drop tables in reverse order of dependencies)
+-- 1. LIMPIEZA (Orden inverso de dependencias)
 IF OBJECT_ID('dbo.UserPermissions', 'U') IS NOT NULL DROP TABLE dbo.UserPermissions;
 IF OBJECT_ID('dbo.RolePermissions', 'U') IS NOT NULL DROP TABLE dbo.RolePermissions;
 IF OBJECT_ID('dbo.Deliveries', 'U') IS NOT NULL DROP TABLE dbo.Deliveries;
@@ -32,7 +29,7 @@ IF OBJECT_ID('dbo.PaymentMethods', 'U') IS NOT NULL DROP TABLE dbo.PaymentMethod
 IF OBJECT_ID('dbo.Customers', 'U') IS NOT NULL DROP TABLE dbo.Customers;
 GO
 
--- 2. SECURITY & IDENTITY
+-- 2. SEGURIDAD E IDENTIDAD
 CREATE TABLE Roles (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Name NVARCHAR(100) NOT NULL UNIQUE,
@@ -42,7 +39,6 @@ CREATE TABLE Roles (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE Permissions (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -54,7 +50,6 @@ CREATE TABLE Permissions (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE RolePermissions (
     RoleId INT NOT NULL,
@@ -63,7 +58,6 @@ CREATE TABLE RolePermissions (
     CONSTRAINT FK_RolePermissions_Roles FOREIGN KEY (RoleId) REFERENCES Roles(Id) ON DELETE CASCADE,
     CONSTRAINT FK_RolePermissions_Permissions FOREIGN KEY (PermissionId) REFERENCES Permissions(Id) ON DELETE CASCADE
 );
-GO
 
 CREATE TABLE Users (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -79,7 +73,6 @@ CREATE TABLE Users (
     IsActive BIT NOT NULL DEFAULT 1,
     CONSTRAINT FK_Users_Roles FOREIGN KEY (RoleId) REFERENCES Roles(Id)
 );
-GO
 
 CREATE TABLE UserPermissions (
     UserId INT NOT NULL,
@@ -90,7 +83,7 @@ CREATE TABLE UserPermissions (
 );
 GO
 
--- 3. CONFIGURATION & CATALOGS
+-- 3. CONFIGURACIÓN Y CATÁLOGOS
 CREATE TABLE AppConfigs (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     [Key] NVARCHAR(100) NOT NULL UNIQUE,
@@ -102,7 +95,6 @@ CREATE TABLE AppConfigs (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE ProductCategories (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -114,7 +106,6 @@ CREATE TABLE ProductCategories (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE ProductSizes (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -126,7 +117,6 @@ CREATE TABLE ProductSizes (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE OrderStatuses (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -139,7 +129,6 @@ CREATE TABLE OrderStatuses (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE PaymentStatuses (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -151,7 +140,6 @@ CREATE TABLE PaymentStatuses (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE DeliveryStatuses (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -164,7 +152,6 @@ CREATE TABLE DeliveryStatuses (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE PaymentMethods (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -178,7 +165,7 @@ CREATE TABLE PaymentMethods (
 );
 GO
 
--- 4. BUSINESS ENTITIES
+-- 4. ENTIDADES DE NEGOCIO
 CREATE TABLE Products (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     CategoryId INT NOT NULL,
@@ -194,7 +181,6 @@ CREATE TABLE Products (
     CONSTRAINT FK_Products_Categories FOREIGN KEY (CategoryId) REFERENCES ProductCategories(Id),
     CONSTRAINT FK_Products_Sizes FOREIGN KEY (SizeId) REFERENCES ProductSizes(Id)
 );
-GO
 
 CREATE TABLE Customers (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -207,7 +193,6 @@ CREATE TABLE Customers (
     UpdatedBy NVARCHAR(100),
     IsActive BIT NOT NULL DEFAULT 1
 );
-GO
 
 CREATE TABLE Addresses (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -225,7 +210,6 @@ CREATE TABLE Addresses (
     IsActive BIT NOT NULL DEFAULT 1,
     CONSTRAINT FK_Addresses_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(Id) ON DELETE CASCADE
 );
-GO
 
 CREATE TABLE Orders (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -248,7 +232,6 @@ CREATE TABLE Orders (
     CONSTRAINT FK_Orders_Statuses FOREIGN KEY (StatusId) REFERENCES OrderStatuses(Id),
     CONSTRAINT FK_Orders_PaymentMethods FOREIGN KEY (PaymentMethodId) REFERENCES PaymentMethods(Id)
 );
-GO
 
 CREATE TABLE OrderDetails (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -265,7 +248,6 @@ CREATE TABLE OrderDetails (
     CONSTRAINT FK_OrderDetails_Orders FOREIGN KEY (OrderId) REFERENCES Orders(Id) ON DELETE CASCADE,
     CONSTRAINT FK_OrderDetails_Products FOREIGN KEY (ProductId) REFERENCES Products(Id)
 );
-GO
 
 CREATE TABLE Deliveries (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -284,7 +266,6 @@ CREATE TABLE Deliveries (
     CONSTRAINT FK_Deliveries_Couriers FOREIGN KEY (CourierId) REFERENCES Users(Id),
     CONSTRAINT FK_Deliveries_Statuses FOREIGN KEY (DeliveryStatusId) REFERENCES DeliveryStatuses(Id)
 );
-GO
 
 CREATE TABLE Compensations (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -304,13 +285,13 @@ CREATE TABLE Compensations (
 );
 GO
 
--- 5. INITIAL SEED DATA
+-- 5. DATOS INICIALES (SEED DATA)
 SET NOCOUNT ON;
 
 -- 5.1 Roles
 INSERT INTO Roles (Name) VALUES ('admin'), ('cajero'), ('cocinero'), ('repartidor');
 
--- 5.2 Permissions
+-- 5.2 Permisos
 INSERT INTO Permissions (Name, Description) VALUES 
 ('clientes.create', 'Crear clientes'),
 ('clientes.read', 'Ver clientes'),
@@ -326,21 +307,18 @@ INSERT INTO Permissions (Name, Description) VALUES
 ('usuarios.manage', 'Gestionar usuarios del sistema'),
 ('seguridad.manage', 'Gestionar roles y permisos');
 
--- 5.3 Assign Permissions to Admin (Role Id 1)
+-- 5.3 Asignar todos los permisos al Admin (Id 1)
 INSERT INTO RolePermissions (RoleId, PermissionId)
 SELECT 1, Id FROM Permissions;
 
--- 5.4 Admin User
+-- 5.4 Usuarios Iniciales
 INSERT INTO Users (FullName, Email, PasswordHash, RoleId, IdentityNumber) 
-VALUES ('Administrador', 'admin@pizzeria.com', 'admin123', 1, '0000-0000-00000');
+VALUES ('Administrador', 'admin@pizzeria.com', 'admin123', 1, '0000-0000-00000'),
+       ('Cajero de Turno', 'cajero@pizzeria.com', '123456', 2, '1111-1111-11111'),
+       ('Maestro Pizzero', 'cocinero@pizzeria.com', '123456', 3, '2222-2222-22222'),
+       ('Repartidor Express', 'repartidor@pizzeria.com', '123456', 4, '3333-3333-33333');
 
--- 5.5 Test Users
-INSERT INTO Users (FullName, Email, PasswordHash, RoleId, IdentityNumber) VALUES 
-('Cajero de Turno', 'cajero@pizzeria.com', '123456', 2, '1111-1111-11111'),
-('Maestro Pizzero', 'cocinero@pizzeria.com', '123456', 3, '2222-2222-22222'),
-('Repartidor Express', 'repartidor@pizzeria.com', '123456', 4, '3333-3333-33333');
-
--- 5.6 Order Statuses
+-- 5.5 Estados de Pedido
 INSERT INTO OrderStatuses (Code, Name, DisplayOrder) VALUES 
 ('pendiente', 'Pendiente', 1),
 ('confirmado', 'Confirmado', 2),
@@ -350,37 +328,37 @@ INSERT INTO OrderStatuses (Code, Name, DisplayOrder) VALUES
 ('entregado', 'Entregado', 6),
 ('cancelado', 'Cancelado', 7);
 
--- 5.7 Delivery Statuses
+-- 5.6 Estados de Entrega
 INSERT INTO DeliveryStatuses (Code, Name, DisplayOrder) VALUES 
 ('pendiente', 'Pendiente de Asignación', 1),
 ('en_camino', 'En Camino', 2),
 ('entregado', 'Entregado', 3),
 ('devuelto', 'Devuelto', 4);
 
--- 5.8 Payment Methods
+-- 5.7 Métodos de Pago
 INSERT INTO PaymentMethods (Code, Name) VALUES 
 ('efectivo', 'Efectivo'),
 ('tarjeta', 'Tarjeta'),
 ('transferencia', 'Transferencia');
 
--- 5.9 Product Categories
+-- 5.8 Categorías de Producto
 INSERT INTO ProductCategories (Code, Name) VALUES 
 ('pizza', 'Pizza'),
 ('bebida', 'Bebida'),
 ('postre', 'Postre'),
 ('entrada', 'Entrada');
 
--- 5.10 App Configs
-INSERT INTO AppConfigs ([Key], Value, Description) 
-VALUES ('IVA_PERCENTAGE', '15', 'Porcentaje de IVA aplicado');
-
--- 5.11 Product Sizes
+-- 5.9 Tamaños de Producto
 INSERT INTO ProductSizes (Code, Name) VALUES 
 ('personal', 'Personal'),
 ('mediana', 'Mediana'),
 ('familiar', 'Familiar');
 
--- 5.12 Products
+-- 5.10 Configuración de App
+INSERT INTO AppConfigs ([Key], Value, Description) 
+VALUES ('IVA_PERCENTAGE', '15', 'Porcentaje de IVA aplicado');
+
+-- 5.11 Productos Iniciales
 INSERT INTO Products (CategoryId, SizeId, Name, Price, Description) VALUES 
 (1, 1, 'Pizza Pepperoni Personal', 180.00, 'Pizza con pepperoni y queso mozzarella'),
 (1, 2, 'Pizza Pepperoni Mediana', 280.00, 'Pizza con pepperoni y queso mozzarella'),
@@ -388,26 +366,19 @@ INSERT INTO Products (CategoryId, SizeId, Name, Price, Description) VALUES
 (1, 1, 'Pizza Suprema Personal', 220.00, 'Jamón, pepperoni, carne, cebolla, chile verde, hongos'),
 (1, 2, 'Pizza Suprema Mediana', 350.00, 'Jamón, pepperoni, carne, cebolla, chile verde, hongos'),
 (1, 3, 'Pizza Suprema Familiar', 520.00, 'Jamón, pepperoni, carne, cebolla, chile verde, hongos'),
-(1, 1, 'Pizza Jamón y Hongos Personal', 190.00, 'Jamón y hongos frescos'),
-(1, 2, 'Pizza Jamón y Hongos Mediana', 300.00, 'Jamón y hongos frescos'),
-(1, 3, 'Pizza Jamón y Hongos Familiar', 480.00, 'Jamón y hongos frescos'),
 (2, NULL, 'Coca Cola 600ml', 35.00, 'Refresco de cola'),
 (2, NULL, 'Coca Cola 1.5L', 65.00, 'Refresco de cola familiar'),
-(2, NULL, 'Té Frío Limón', 30.00, 'Té natural con limón'),
-(2, NULL, 'Agua Embotellada', 20.00, 'Agua purificada 500ml'),
 (4, NULL, 'Palitroques con Queso', 95.00, 'Pan horneado con ajo y mozzarella'),
-(4, NULL, 'Alitas de Pollo (8 pcs)', 185.00, 'Alitas con salsa buffalo o barbacoa'),
-(3, NULL, 'Pie de Manzana', 45.00, 'Postre tradicional de manzana'),
 (3, NULL, 'Brownie con Helado', 60.00, 'Brownie de chocolate caliente con helado de vainilla');
--- 5.13 Customers
-INSERT INTO Customers (FullName, Phone, Email, CreatedBy) VALUES 
-('Juan Perez', '99887766', 'juan@email.com', 'System'),
-('Maria Rodriguez', '88776655', 'maria@email.com', 'System'),
-('Carlos Lopez', '77665544', 'carlos@email.com', 'System');
 
-INSERT INTO CustomerAddresses (CustomerId, AddressLine1, IsDefault) VALUES 
-(1, 'Residencial Los Pinos, Bloque A, Casa 5', 1),
-(2, 'Colonia El Prado, Calle Principal #123', 1),
-(3, 'Barrio El Centro, frente a Parque Central', 1);
+-- 5.12 Clientes y Direcciones de Prueba
+INSERT INTO Customers (FullName, Phone, Email) VALUES 
+('Juan Perez', '99887766', 'juan@email.com'),
+('Maria Rodriguez', '88776655', 'maria@email.com');
 
-PRINT 'Database schema and seed data for SQL Server created successfully.';
+INSERT INTO Addresses (CustomerId, Street, Number, Sector, City, Reference, IsPrimary) VALUES 
+(1, 'Residencial Los Pinos', 'Casa 5', 'Bloque A', 'Tegucigalpa', 'Frente al parque', 1),
+(2, 'Colonia El Prado', '#123', 'Calle Principal', 'Tegucigalpa', 'Casa color azul', 1);
+
+PRINT 'Base de datos consolidada y datos iniciales creados exitosamente.';
+GO

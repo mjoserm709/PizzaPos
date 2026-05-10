@@ -1,68 +1,53 @@
-# PizzaPos
+# PizzaPos 🍕
 
-Sistema de Punto de Venta (POS) para una Pizzería, desarrollado con .NET 8.
+Sistema de Punto de Venta (POS) profesional para una Pizzería, desarrollado con **.NET 8** y **SQL Server**.
 
-## Estructura del Proyecto
+## 🚀 Características Principales
+- **Autenticación y Seguridad**: Sistema de login robusto con roles y permisos. Contraseñas protegidas mediante hasehado industrial **BCrypt**.
+- **Gestión de Pedidos (Punto de Venta)**: Interfaz intuitiva para toma de pedidos con búsqueda rápida de clientes y catálogo dinámico.
+- **Facturación Integrada**: Generación automática de recibos profesionales para impresoras térmicas (80mm) al despachar pedidos.
+- **Tablero Kanban**: Gestión de pedidos en tiempo real con estados (Pendiente, En Preparación, Listo, En Camino, Entregado).
+- **Módulos Administrativos**:
+  - Gestión de Clientes y Direcciones.
+  - Catálogo de Productos y Precios.
+  - Gestión de Usuarios y Roles (RBAC).
+  - Configuración de Seguridad (Permisos granulares).
 
-El proyecto está dividido en dos partes principales:
+## 🛠️ Estructura del Proyecto
+- **PizzaPos.Api**: Backend ASP.NET Core Web API siguiendo arquitectura modular.
+- **PizzaPos.WinForms**: Frontend de escritorio moderno y reactivo.
+- **PizzaPos.Infrastructure**: Capa de persistencia con Entity Framework Core y SQL Server.
 
-- **PizzaPos.Api**: Backend desarrollado con ASP.NET Core Web API. Maneja la lógica de negocio, acceso a datos y endpoints para el frontend.
-- **PizzaPos.WinForms**: Frontend desarrollado con Windows Forms. Es la interfaz de escritorio para los usuarios del sistema.
-
-## Requisitos
-
+## ⚙️ Requisitos
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- Visual Studio 2022 (recomendado) o VS Code.
+- **SQL Server** (Express, LocalDB o Estándar)
+- Visual Studio 2022 o VS Code.
 
-## Cómo ejecutar
+## 🏁 Instalación y Configuración
 
-### Ejecutar la API
-1. Navega a la carpeta de la API:
-   ```bash
-   cd PizzaPos.Api
-   ```
-2. Ejecuta el proyecto:
-   ```bash
-   dotnet run
-   ```
-   La API estará disponible en `http://localhost:5267` (o el puerto configurado en `launchSettings.json`). Puedes acceder a la documentación Swagger en `http://localhost:5267/swagger`.
+### 1. Base de Datos
+Ejecuta el script consolidado en tu servidor de SQL Server:
+- Archivo: `PizzaPos_Final_Consolidated.sql`
+- Este script crea las tablas, permisos, roles y datos iniciales de prueba.
 
-### Ejecutar el Frontend (WinForms)
-1. Navega a la carpeta de WinForms:
-   ```bash
-   cd PizzaPos.WinForms
-   ```
-2. Ejecuta el proyecto:
-   ```bash
-   dotnet run
-   ```
+### 2. Ejecutar la Aplicación
+Puedes iniciar todo el sistema (API + Frontend) con un solo comando:
 
-### Ejecutar Ambos (API + Frontend)
-Si quieres iniciar ambos al mismo tiempo:
-
-#### Opción 1: Usando el script de PowerShell
+#### Usando PowerShell:
 ```powershell
 .\run-all.ps1
 ```
 
-#### Opción 2: Usando el archivo Batch
+#### Usando Batch:
 ```cmd
 run-all.bat
 ```
 
-#### Opción 3: Visual Studio 2022
-1. Haz clic derecho en la Solución (`PizzaPos`) en el Explorador de Soluciones.
-2. Selecciona **Configurar proyectos de inicio...** (Configure Startup Projects...).
-3. Selecciona **Proyectos de inicio múltiples** (Multiple startup projects).
-4. Establece la acción de ambos proyectos (`PizzaPos.Api` y `PizzaPos.WinForms`) en **Iniciar** (Start).
-5. Haz clic en **Aceptar** y luego presiona **F5**.
+## 👤 Usuarios por Defecto
+- **Admin**: `admin@pizzeria.com` / `admin123`
+- **Cajero**: `cajero@pizzeria.com` / `123456`
+- **Cocinero**: `cocinero@pizzeria.com` / `123456`
+- **Repartidor**: `repartidor@pizzeria.com` / `123456`
 
-## Características Actuales
-- [x] Estructura de solución y proyectos.
-- [x] Endpoint de estado (`/api/status`) en la API.
-- [x] Formulario base en WinForms con validación de conexión a la API.
-
-## Próximos Pasos
-- [ ] Implementar modelos de datos (Pizza, Pedido, Cliente).
-- [ ] Configurar base de datos (Entity Framework Core).
-- [ ] Crear formularios para gestión de inventario y toma de pedidos.
+---
+*Desarrollado como una solución integral para la gestión operativa de pizzerías.*
