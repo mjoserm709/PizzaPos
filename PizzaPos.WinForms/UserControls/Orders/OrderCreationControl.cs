@@ -23,16 +23,31 @@ public partial class OrderCreationControl : UserControl
         InitializeComponent();
         _token = token;
         
-        dgvProducts.AutoGenerateColumns = true;
-        dgvCart.AutoGenerateColumns = false;
-        
-        ConfigureCartGrid();
+        if (dgvCart != null)
+        {
+            dgvCart.AutoGenerateColumns = false;
+            StyleGrids();
+            ConfigureCartGrid();
+            dgvCart.CellDoubleClick += (s, e) => RemoveItemFromCart(e.RowIndex);
+        }
         
         this.Load += async (s, e) => {
             await LoadIvaRate();
             await LoadProducts();
             LoadPaymentMethods();
         };
+    }
+
+    private void StyleGrids()
+    {
+        dgvCart.BorderStyle = BorderStyle.None;
+        dgvCart.BackgroundColor = Color.White;
+        dgvCart.GridColor = Color.FromArgb(240, 240, 240);
+        dgvCart.RowTemplate.Height = 35;
+        dgvCart.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(245, 247, 251);
+        dgvCart.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        dgvCart.EnableHeadersVisualStyles = false;
+        dgvCart.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
     }
 
     private void ConfigureCartGrid()
@@ -78,17 +93,91 @@ public partial class OrderCreationControl : UserControl
                 var result = JsonSerializer.Deserialize<DynamicResponse<List<ProductModel>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (result?.Data != null)
                 {
-                    _productsCatalog = new BindingList<ProductModel>(result.Data);
-                    dgvProducts.DataSource = _productsCatalog;
-                    if (dgvProducts.Columns.Count > 0)
-                    {
-                        dgvProducts.Columns["Id"].Visible = false;
-                        dgvProducts.Columns["Price"].DefaultCellStyle.Format = "C2";
-                    }
+                    _productsCatalog = new BindingList<ProductModel>(result.Data.Where(p => p.IsActive).ToList());
+                    RenderProductCards(_productsCatalog);
                 }
             }
         }
         catch (Exception ex) { ToastNotification.Error("Error cargando productos: " + ex.Message); }
+    }
+
+    private void RenderProductCards(IEnumerable<ProductModel> products)
+    {
+        flowProducts.Controls.Clear();
+        foreach (var product in products)
+        {
+            var card = new Panel {
+                Size = new Size(130, 140),
+                BackColor = Color.White,
+                Margin = new Padding(5),
+                Cursor = Cursors.Hand
+            };
+            card.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, card.Width, card.Height, 15, 15));
+
+            var lblName = new Label {
+                Text = product.Name,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                Dock = DockStyle.Top,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Height = 45,
+                Padding = new Padding(5)
+            };
+
+            var lblPrice = new Label {
+                Text = product.Price.ToString("C2"),
+                Font = new Font("Segoe UI Semibold", 10F),
+                ForeColor = Color.FromArgb(46, 125, 50),
+                Dock = DockStyle.Bottom,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Height = 30
+            };
+
+            var btnAdd = new Button {
+                Text = "Añadir ➕",
+                Dock = DockStyle.Bottom,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(232, 245, 233),
+                ForeColor = Color.FromArgb(46, 125, 50),
+                Height = 30,
+                Font = new Font("Segoe UI", 8F, FontStyle.Bold)
+            };
+            btnAdd.FlatAppearance.BorderSize = 0;
+            
+            // Eventos
+            Action addToCart = () => AddProductToCart(product);
+            card.Click += (s, e) => addToCart();
+            lblName.Click += (s, e) => addToCart();
+            lblPrice.Click += (s, e) => addToCart();
+            btnAdd.Click += (s, e) => addToCart();
+
+            card.Controls.Add(btnAdd);
+            card.Controls.Add(lblPrice);
+            card.Controls.Add(lblName);
+            flowProducts.Controls.Add(card);
+        }
+    }
+
+    [System.Runtime.InteropServices.DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+    private static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+
+    private void AddProductToCart(ProductModel product)
+    {
+        var existing = _cart.FirstOrDefault(c => c.ProductId == product.Id);
+        if (existing != null)
+        {
+            existing.Quantity++;
+            UpdateTotals();
+            dgvCart.Refresh();
+        }
+        else
+        {
+            _cart.Add(new CartItem {
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Quantity = 1,
+                UnitPrice = product.Price
+            });
+        }
     }
 
     private void LoadPaymentMethods()
@@ -231,37 +320,14 @@ public partial class OrderCreationControl : UserControl
         await PerformCustomerSearch(txtSearchCustomer.Text);
     }
 
-    private void dgvProducts_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-    {
-        if (e.RowIndex < 0) return;
-        var product = (ProductModel)dgvProducts.Rows[e.RowIndex].DataBoundItem;
-        
-        var existing = _cart.FirstOrDefault(c => c.ProductId == product.Id);
-        if (existing != null)
-        {
-            existing.Quantity++;
-            _cart.ResetBindings();
-        }
-        else
-        {
-            _cart.Add(new CartItem {
-                ProductId = product.Id,
-                ProductName = product.Name,
-                Quantity = 1,
-                UnitPrice = product.Price
-            });
-        }
-    }
 
-    private void txtSearchProduct_TextChanged(object sender, EventArgs e)
-    {
-        var filter = txtSearchProduct.Text.ToLower();
-        var filtered = _productsCatalog.Where(p => p.Name.ToLower().Contains(filter)).ToList();
-        dgvProducts.DataSource = new BindingList<ProductModel>(filtered);
-    }
+
+
 
     private void UpdateTotals()
     {
+        if (lblSubtotal == null || lblTax == null || lblTotal == null) return;
+
         decimal subtotal = _cart.Sum(c => c.Total);
         decimal tax = subtotal * _ivaRate;
         decimal total = subtotal + tax;
@@ -339,6 +405,35 @@ public partial class OrderCreationControl : UserControl
             }
         }
         catch (Exception ex) { ToastNotification.Error("Error de conexión: " + ex.Message); }
+    }
+
+    private void RemoveItemFromCart(int rowIndex)
+    {
+        if (rowIndex < 0 || rowIndex >= _cart.Count) return;
+
+        var item = _cart[rowIndex];
+        if (item.Quantity > 1)
+        {
+            item.Quantity--;
+        }
+        else
+        {
+            _cart.RemoveAt(rowIndex);
+        }
+        
+        dgvCart.Refresh();
+        UpdateTotals();
+    }
+
+    private void txtSearchProduct_TextChanged(object sender, EventArgs e)
+    {
+        string term = txtSearchProduct.Text.ToLower();
+        var filtered = _productsCatalog.Where(p => 
+            p.Name.ToLower().Contains(term) || 
+            (p.Description?.ToLower().Contains(term) ?? false)
+        ).ToList();
+        
+        RenderProductCards(filtered);
     }
 }
 

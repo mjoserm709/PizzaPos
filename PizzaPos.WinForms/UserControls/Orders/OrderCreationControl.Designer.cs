@@ -26,7 +26,7 @@ partial class OrderCreationControl
         this.searchTimer = new System.Windows.Forms.Timer();
 
         this.pnlProducts = new System.Windows.Forms.Panel();
-        this.dgvProducts = new System.Windows.Forms.DataGridView();
+        this.flowProducts = new System.Windows.Forms.FlowLayoutPanel();
         this.txtSearchProduct = new System.Windows.Forms.TextBox();
         this.lblTitleProducts = new System.Windows.Forms.Label();
 
@@ -45,7 +45,6 @@ partial class OrderCreationControl
         this.pnlCustomer.SuspendLayout();
         this.pnlProducts.SuspendLayout();
         this.pnlCart.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.dgvProducts)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.dgvCart)).BeginInit();
         this.SuspendLayout();
 
@@ -111,7 +110,7 @@ partial class OrderCreationControl
         this.pnlProducts.BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
         this.pnlProducts.Controls.Add(this.lblTitleProducts);
         this.pnlProducts.Controls.Add(this.txtSearchProduct);
-        this.pnlProducts.Controls.Add(this.dgvProducts);
+
         this.pnlProducts.Location = new System.Drawing.Point(20, 120);
         this.pnlProducts.Size = new System.Drawing.Size(460, 410);
 
@@ -125,14 +124,11 @@ partial class OrderCreationControl
         this.txtSearchProduct.PlaceholderText = "Filtrar productos...";
         this.txtSearchProduct.TextChanged += new System.EventHandler(this.txtSearchProduct_TextChanged);
 
-        this.dgvProducts.Location = new System.Drawing.Point(10, 80);
-        this.dgvProducts.Size = new System.Drawing.Size(440, 320);
-        this.dgvProducts.BackgroundColor = System.Drawing.Color.White;
-        this.dgvProducts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-        this.dgvProducts.AllowUserToAddRows = false;
-        this.dgvProducts.ReadOnly = true;
-        this.dgvProducts.RowHeadersVisible = false;
-        this.dgvProducts.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProducts_CellDoubleClick);
+        this.flowProducts.Location = new System.Drawing.Point(10, 80);
+        this.flowProducts.Size = new System.Drawing.Size(440, 320);
+        this.flowProducts.BackColor = System.Drawing.Color.Transparent;
+        this.flowProducts.AutoScroll = true;
+        this.flowProducts.Name = "flowProducts";
 
         // --- Panel Carrito ---
         this.pnlCart.BackColor = System.Drawing.Color.FromArgb(232, 245, 233);
@@ -180,6 +176,10 @@ partial class OrderCreationControl
         this.lblTax.Size = new System.Drawing.Size(180, 25);
         this.lblTax.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
+        this.lblTotal.Text = "TOTAL: $0.00";
+        this.lblTotal.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+        this.lblTotal.Location = new System.Drawing.Point(280, 310);
+        this.lblTotal.Size = new System.Drawing.Size(180, 30);
         this.lblTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
         // txtNotes
@@ -201,13 +201,17 @@ partial class OrderCreationControl
         this.btnFinalize.Size = new System.Drawing.Size(460, 45);
         this.btnFinalize.Click += new System.EventHandler(this.btnFinalize_Click);
 
-        // Control principal
-        this.Controls.Add(this.lstCustomerResults);
+        this.pnlProducts.Controls.Add(this.flowProducts);
+        this.pnlProducts.Controls.Add(this.lblTitleProducts);
+        this.pnlProducts.Controls.Add(this.txtSearchProduct);
+        
+        this.pnlCustomer.Controls.Add(this.lstCustomerResults);
         this.Controls.Add(this.pnlCart);
         this.Controls.Add(this.pnlProducts);
         this.Controls.Add(this.pnlCustomer);
         this.Name = "OrderCreationControl";
-        this.Size = new System.Drawing.Size(1000, 550);
+        this.Size = new System.Drawing.Size(1000, 580);
+        this.BackColor = System.Drawing.Color.FromArgb(245, 247, 251);
 
         this.pnlCustomer.ResumeLayout(false);
         this.pnlCustomer.PerformLayout();
@@ -215,7 +219,6 @@ partial class OrderCreationControl
         this.pnlProducts.PerformLayout();
         this.pnlCart.ResumeLayout(false);
         this.pnlCart.PerformLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.dgvProducts)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.dgvCart)).EndInit();
         this.ResumeLayout(false);
     }
@@ -229,7 +232,7 @@ partial class OrderCreationControl
     private System.Windows.Forms.Label lblAddress;
 
     private System.Windows.Forms.Panel pnlProducts;
-    private System.Windows.Forms.DataGridView dgvProducts;
+    private System.Windows.Forms.FlowLayoutPanel flowProducts;
     private System.Windows.Forms.TextBox txtSearchProduct;
     private System.Windows.Forms.Label lblTitleProducts;
 
