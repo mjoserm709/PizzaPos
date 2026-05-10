@@ -88,6 +88,31 @@ public class OrderRepository : IOrderRepository
                            .ToListAsync();
     }
 
+    public async Task<IEnumerable<Order>> GetHistoryAsync(DateTime? startDate, DateTime? endDate, string? searchTerm)
+    {
+        var query = _dbSet.Include(o => o.Customer)
+                          .Include(o => o.Status)
+                          .Include(o => o.Details)
+                          .AsQueryable();
+
+        if (startDate.HasValue)
+            query = query.Where(o => o.CreatedAt >= startDate.Value);
+
+        if (endDate.HasValue)
+        {
+            var endOfDay = endDate.Value.Date.AddDays(1);
+            query = query.Where(o => o.CreatedAt < endOfDay);
+        }
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(o => o.OrderNumber.Contains(searchTerm) || 
+                                     o.Customer.FullName.Contains(searchTerm));
+        }
+
+        return await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
+    }
+
     public async Task<string> GetNextOrderNumberAsync()
     {
         var count = await _dbSet.CountAsync();

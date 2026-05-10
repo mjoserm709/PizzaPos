@@ -17,6 +17,7 @@ public interface IOrderRepository
     Task<Order?> GetByIdAsync(int id);
     Task<IEnumerable<Order>> GetByStatusAsync(string statusCode);
     Task<IEnumerable<Order>> GetActiveOrdersAsync();
+    Task<IEnumerable<Order>> GetHistoryAsync(DateTime? startDate, DateTime? endDate, string? searchTerm);
     Task<string> GetNextOrderNumberAsync();
     Task AddAsync(Order order);
     Task UpdateAsync(Order order);

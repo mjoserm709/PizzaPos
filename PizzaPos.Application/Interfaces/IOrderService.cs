@@ -7,6 +7,7 @@ public interface IOrderService
     Task<OrderResponseDto> CreateOrderAsync(CreateOrderRequest request, string currentUsername);
     Task<IEnumerable<OrderResponseDto>> GetOrdersByStatusAsync(string statusCode);
     Task<IEnumerable<OrderResponseDto>> GetActiveOrdersAsync();
+    Task<IEnumerable<OrderResponseDto>> GetOrderHistoryAsync(DateTime? startDate, DateTime? endDate, string? searchTerm);
     Task<OrderResponseDto?> GetOrderByIdAsync(int id);
     Task<decimal> GetIvaRateAsync();
     Task UpdateOrderStatusAsync(int orderId, string statusCode, string currentUsername);

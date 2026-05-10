@@ -96,6 +96,12 @@ public class OrderService : IOrderService
         return orders.Select(MapToDto);
     }
 
+    public async Task<IEnumerable<OrderResponseDto>> GetOrderHistoryAsync(DateTime? startDate, DateTime? endDate, string? searchTerm)
+    {
+        var orders = await _orderRepository.GetHistoryAsync(startDate, endDate, searchTerm);
+        return orders.Select(MapToDto);
+    }
+
     public async Task<OrderResponseDto?> GetOrderByIdAsync(int id)
     {
         var order = await _orderRepository.GetByIdAsync(id);

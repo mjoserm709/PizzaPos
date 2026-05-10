@@ -36,6 +36,13 @@ public class OrdersController : ControllerBase
         return Ok(new { success = true, data = results });
     }
 
+    [HttpGet("history")]
+    public async Task<IActionResult> GetHistory([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? searchTerm)
+    {
+        var results = await _orderService.GetOrderHistoryAsync(startDate, endDate, searchTerm);
+        return Ok(new { success = true, data = results });
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
     {
