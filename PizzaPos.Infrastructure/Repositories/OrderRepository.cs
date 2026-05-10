@@ -24,8 +24,18 @@ public class CustomerRepository : ICustomerRepository
                            .FirstOrDefaultAsync(c => c.Phone == phone);
     }
 
+    public async Task<IEnumerable<Customer>> GetAllAsync()
+    {
+        return await _dbSet.Include(c => c.Addresses).ToListAsync();
+    }
+
     public async Task<IEnumerable<Customer>> SearchAsync(string term)
     {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return await GetAllAsync();
+        }
+        
         return await _dbSet.Include(c => c.Addresses)
                            .Where(c => c.FullName.Contains(term) || c.Phone.Contains(term) || c.Email.Contains(term))
                            .ToListAsync();

@@ -34,23 +34,23 @@ public class PizzaPosDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Mapeo de Tablas
-        modelBuilder.Entity<AppConfig>().ToTable("configuracion");
-        modelBuilder.Entity<Role>().ToTable("roles");
-        modelBuilder.Entity<Permission>().ToTable("permisos");
-        modelBuilder.Entity<User>().ToTable("usuarios");
-        modelBuilder.Entity<OrderStatus>().ToTable("estados_pedido");
-        modelBuilder.Entity<PaymentStatus>().ToTable("estados_pago");
-        modelBuilder.Entity<DeliveryStatus>().ToTable("estados_entrega");
-        modelBuilder.Entity<PaymentMethod>().ToTable("metodos_pago");
-        modelBuilder.Entity<ProductCategory>().ToTable("categorias_producto");
-        modelBuilder.Entity<ProductSize>().ToTable("tamanos_producto");
-        modelBuilder.Entity<Customer>().ToTable("clientes");
-        modelBuilder.Entity<Address>().ToTable("direcciones");
-        modelBuilder.Entity<Product>().ToTable("productos");
-        modelBuilder.Entity<Order>().ToTable("pedidos");
-        modelBuilder.Entity<OrderDetail>().ToTable("pedido_detalles");
-        modelBuilder.Entity<Delivery>().ToTable("entregas");
+        // Mapeo de Tablas (Coincidiendo con PizzaPos_FullSchema.sql)
+        modelBuilder.Entity<AppConfig>().ToTable("AppConfigs");
+        modelBuilder.Entity<Role>().ToTable("Roles");
+        modelBuilder.Entity<Permission>().ToTable("Permissions");
+        modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<OrderStatus>().ToTable("OrderStatuses");
+        modelBuilder.Entity<PaymentStatus>().ToTable("PaymentStatuses");
+        modelBuilder.Entity<DeliveryStatus>().ToTable("DeliveryStatuses");
+        modelBuilder.Entity<PaymentMethod>().ToTable("PaymentMethods");
+        modelBuilder.Entity<ProductCategory>().ToTable("ProductCategories");
+        modelBuilder.Entity<ProductSize>().ToTable("ProductSizes");
+        modelBuilder.Entity<Customer>().ToTable("Customers");
+        modelBuilder.Entity<Address>().ToTable("Addresses");
+        modelBuilder.Entity<Product>().ToTable("Products");
+        modelBuilder.Entity<Order>().ToTable("Orders");
+        modelBuilder.Entity<OrderDetail>().ToTable("OrderDetails");
+        modelBuilder.Entity<Delivery>().ToTable("Deliveries");
 
         // Relación Muchos a Muchos Roles-Permisos (Configuración única)
         modelBuilder.Entity<Role>()
@@ -155,7 +155,7 @@ public class PizzaPosDbContext : DbContext
         );
         // 10. Configuración del Sistema
         modelBuilder.Entity<AppConfig>().HasData(
-            new AppConfig { Id = 1, Key = "IVA_PERCENTAGE", Value = "13", Description = "Porcentaje de IVA aplicado a las ventas", CreatedAt = now, CreatedBy = "System" }
+            new AppConfig { Id = 1, Key = "IVA_PERCENTAGE", Value = "15", Description = "Porcentaje de IVA aplicado a las ventas", CreatedAt = now, CreatedBy = "System" }
         );
     }
 }

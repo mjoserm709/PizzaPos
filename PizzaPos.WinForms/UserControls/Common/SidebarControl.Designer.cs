@@ -19,6 +19,8 @@ partial class SidebarControl
         this.btnActiveOrders = new System.Windows.Forms.Button();
         this.btnHistory = new System.Windows.Forms.Button();
         this.btnSettings = new System.Windows.Forms.Button();
+        this.btnCustomers = new System.Windows.Forms.Button();
+        this.btnProducts = new System.Windows.Forms.Button();
         this.btnManageUsers = new System.Windows.Forms.Button();
         this.btnSecurity = new System.Windows.Forms.Button();
         this.lblMenu = new System.Windows.Forms.Label();
@@ -83,11 +85,35 @@ partial class SidebarControl
         this.btnSettings.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
         // 
+        // btnCustomers
+        // 
+        this.btnCustomers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.btnCustomers.ForeColor = System.Drawing.Color.White;
+        this.btnCustomers.Location = new System.Drawing.Point(10, 240);
+        this.btnCustomers.Name = "btnCustomers";
+        this.btnCustomers.Size = new System.Drawing.Size(180, 40);
+        this.btnCustomers.TabIndex = 7;
+        this.btnCustomers.Text = "Cartera Clientes";
+        this.btnCustomers.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        this.btnCustomers.Click += new System.EventHandler(this.btnCustomers_Click);
+        // 
+        // btnProducts
+        // 
+        this.btnProducts.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.btnProducts.ForeColor = System.Drawing.Color.White;
+        this.btnProducts.Location = new System.Drawing.Point(10, 285);
+        this.btnProducts.Name = "btnProducts";
+        this.btnProducts.Size = new System.Drawing.Size(180, 40);
+        this.btnProducts.TabIndex = 8;
+        this.btnProducts.Text = "Gestión Productos";
+        this.btnProducts.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        this.btnProducts.Click += new System.EventHandler(this.btnProducts_Click);
+        // 
         // btnManageUsers
         // 
         this.btnManageUsers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnManageUsers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-        this.btnManageUsers.Location = new System.Drawing.Point(10, 260);
+        this.btnManageUsers.Location = new System.Drawing.Point(10, 350);
         this.btnManageUsers.Name = "btnManageUsers";
         this.btnManageUsers.Size = new System.Drawing.Size(180, 40);
         this.btnManageUsers.TabIndex = 5;
@@ -99,7 +125,7 @@ partial class SidebarControl
         // 
         this.btnSecurity.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnSecurity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-        this.btnSecurity.Location = new System.Drawing.Point(10, 305);
+        this.btnSecurity.Location = new System.Drawing.Point(10, 395);
         this.btnSecurity.Name = "btnSecurity";
         this.btnSecurity.Size = new System.Drawing.Size(180, 40);
         this.btnSecurity.TabIndex = 6;
@@ -112,6 +138,8 @@ partial class SidebarControl
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(51)))), ((int)(((byte)(23)))));
+        this.Controls.Add(this.btnProducts);
+        this.Controls.Add(this.btnCustomers);
         this.Controls.Add(this.btnSecurity);
         this.Controls.Add(this.btnManageUsers);
         this.Controls.Add(this.btnSettings);
@@ -129,6 +157,8 @@ partial class SidebarControl
     private System.Windows.Forms.Button btnActiveOrders;
     private System.Windows.Forms.Button btnHistory;
     private System.Windows.Forms.Button btnSettings;
+    private System.Windows.Forms.Button btnCustomers;
+    private System.Windows.Forms.Button btnProducts;
     private System.Windows.Forms.Button btnManageUsers;
     private System.Windows.Forms.Button btnSecurity;
     private System.Windows.Forms.Label lblMenu;

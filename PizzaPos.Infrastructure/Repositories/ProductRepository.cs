@@ -7,16 +7,30 @@ namespace PizzaPos.Infrastructure.Repositories;
 
 public class ProductRepository : IProductRepository
 {
+    private readonly PizzaPosDbContext _context;
     private readonly DbSet<Product> _dbSet;
 
     public ProductRepository(PizzaPosDbContext context)
     {
+        _context = context;
         _dbSet = context.Products;
     }
 
     public async Task<Product?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
 
     public async Task<IEnumerable<Product>> GetAllAsync() => await _dbSet.ToListAsync();
+
+    public async Task AddAsync(Product product)
+    {
+        await _dbSet.AddAsync(product);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Product product)
+    {
+        _dbSet.Update(product);
+        await _context.SaveChangesAsync();
+    }
 }
 
 public class OrderStatusRepository : IOrderStatusRepository

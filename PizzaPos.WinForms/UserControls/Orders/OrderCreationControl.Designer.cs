@@ -20,6 +20,8 @@ partial class OrderCreationControl
         this.btnSearchCustomer = new System.Windows.Forms.Button();
         this.lblCustomerInfo = new System.Windows.Forms.Label();
         this.lblTitleCustomer = new System.Windows.Forms.Label();
+        this.cmbAddress = new System.Windows.Forms.ComboBox();
+        this.lblAddress = new System.Windows.Forms.Label();
 
         this.pnlProducts = new System.Windows.Forms.Panel();
         this.dgvProducts = new System.Windows.Forms.DataGridView();
@@ -45,6 +47,8 @@ partial class OrderCreationControl
 
         // --- Panel Cliente ---
         this.pnlCustomer.BackColor = System.Drawing.Color.White;
+        this.pnlCustomer.Controls.Add(this.lblAddress);
+        this.pnlCustomer.Controls.Add(this.cmbAddress);
         this.pnlCustomer.Controls.Add(this.lblTitleCustomer);
         this.pnlCustomer.Controls.Add(this.lblCustomerInfo);
         this.pnlCustomer.Controls.Add(this.btnSearchCustomer);
@@ -71,6 +75,15 @@ partial class OrderCreationControl
         this.lblCustomerInfo.Location = new System.Drawing.Point(330, 45);
         this.lblCustomerInfo.AutoSize = true;
         this.lblCustomerInfo.ForeColor = System.Drawing.Color.DimGray;
+
+        this.lblAddress.Text = "Dirección de Entrega:";
+        this.lblAddress.Location = new System.Drawing.Point(600, 20);
+        this.lblAddress.AutoSize = true;
+        this.lblAddress.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+
+        this.cmbAddress.Location = new System.Drawing.Point(600, 40);
+        this.cmbAddress.Size = new System.Drawing.Size(380, 30);
+        this.cmbAddress.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 
         // --- Panel Productos ---
         this.pnlProducts.BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
@@ -182,6 +195,8 @@ partial class OrderCreationControl
     private System.Windows.Forms.Button btnSearchCustomer;
     private System.Windows.Forms.Label lblCustomerInfo;
     private System.Windows.Forms.Label lblTitleCustomer;
+    private System.Windows.Forms.ComboBox cmbAddress;
+    private System.Windows.Forms.Label lblAddress;
 
     private System.Windows.Forms.Panel pnlProducts;
     private System.Windows.Forms.DataGridView dgvProducts;

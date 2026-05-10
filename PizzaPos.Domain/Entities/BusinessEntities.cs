@@ -28,7 +28,7 @@ public class Address : BaseEntity
     public bool IsPrimary { get; set; }
     public bool IsActive { get; set; } = true;
     
-    public Customer Customer { get; set; } = null!;
+    public Customer? Customer { get; set; }
 }
 
 public class Product : BaseEntity

@@ -112,11 +112,17 @@ public partial class OrderCreationControl : UserControl
             {
                 var json = await res.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<DynamicResponse<CustomerModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (result?.Data != null)
+                if (result.Success && result.Data != null)
                 {
                     _selectedCustomer = result.Data;
                     lblCustomerInfo.Text = $"Cliente: {_selectedCustomer.FullName}";
-                    lblCustomerInfo.ForeColor = System.Drawing.Color.Navy;
+                    lblCustomerInfo.ForeColor = System.Drawing.Color.Black;
+                    
+                    // Cargar direcciones
+                    cmbAddress.DataSource = null;
+                    cmbAddress.DataSource = _selectedCustomer.Addresses;
+                    cmbAddress.DisplayMember = "Street";
+                    
                     ToastNotification.Success("Cliente encontrado");
                 }
             }
@@ -184,10 +190,17 @@ public partial class OrderCreationControl : UserControl
             return;
         }
 
-        var request = new {
+        var request = new
+        {
             CustomerId = _selectedCustomer.Id,
-            PaymentMethodId = 1, // Por ahora fijo a Efectivo
-            Items = _cart.Select(c => new { c.ProductId, c.Quantity, c.UnitPrice }).ToList(),
+            AddressId = (cmbAddress.SelectedItem as AddressModel)?.Id,
+            PaymentMethodId = cmbPaymentMethod.SelectedIndex + 1,
+            Items = _cart.Select(i => new
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice
+            }).ToList(),
             Notes = "Pedido desde WinForms"
         };
 
@@ -229,18 +242,4 @@ public class CartItem : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-}
-
-public class ProductModel
-{
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public decimal Price { get; set; }
-}
-
-public class CustomerModel
-{
-    public int Id { get; set; }
-    public string FullName { get; set; } = string.Empty;
-    public string Phone { get; set; } = string.Empty;
 }
