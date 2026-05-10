@@ -51,27 +51,20 @@ public partial class SecurityManagementControl : UserControl
 
     private void ApplyPermissions()
     {
-        // Solo administradores de seguridad pueden crear/editar roles
-        bool canManageRoles = _permissions.Contains("security.roles.manage");
-        
+        bool canManageRoles = _permissions.Contains("roles.manage");
+        bool canManagePerms = _permissions.Contains("permissions.manage");
+
+        // Configuración de Roles
+        tabRoles.Enabled = canManageRoles;
         btnNewRole.Visible = canManageRoles;
         btnEditRole.Visible = canManageRoles;
         btnToggleRole.Visible = canManageRoles;
 
-        // Permisos para la sección de permisos
-        bool canManagePerms = _permissions.Contains("security.permissions.view");
-        // Si no puede ver permisos, ocultamos el tab (o los botones)
-        if (!canManagePerms)
-        {
-            tabControl.TabPages.Remove(tabPermissions);
-        }
-        else
-        {
-            // Solo si puede gestionar permisos a fondo
-            btnNewPerm.Visible = canManageRoles;
-            btnEditPerm.Visible = canManageRoles;
-            btnTogglePerm.Visible = canManageRoles;
-        }
+        // Configuración de Permisos
+        tabPermissions.Enabled = canManagePerms;
+        btnNewPerm.Visible = canManagePerms;
+        btnEditPerm.Visible = canManagePerms;
+        btnTogglePerm.Visible = canManagePerms;
     }
 
     private async Task RefreshAll()
@@ -412,6 +405,7 @@ public partial class SecurityManagementControl : UserControl
         var res = await _httpClient.PatchAsync("http://localhost:5267/api/security/roles/status", content);
         if (res.IsSuccessStatusCode) await LoadRoles();
     }
+
 }
 
 public record PermissionListItem(int Id, string Name, string Description);

@@ -35,9 +35,9 @@ public partial class UserManagementControl : UserControl
 
     private void ApplyPermissions()
     {
-        btnNew.Visible = _permissions.Contains("users.create");
-        btnEdit.Visible = _permissions.Contains("users.edit");
-        btnToggleStatus.Visible = _permissions.Contains("users.delete");
+        btnNew.Visible = _permissions.Contains("usuarios.create");
+        btnEdit.Visible = _permissions.Contains("usuarios.update");
+        btnToggleStatus.Visible = _permissions.Contains("usuarios.delete");
     }
 
     private async Task LoadRolesAndPermissions()

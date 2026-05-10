@@ -26,25 +26,27 @@ public class UserService : IUserService
         if (request.IdentityNumber.Length != 15)
             throw new ArgumentException("La identidad debe tener exactamente 15 caracteres (formato: XXXX-XXXX-XXXXX).");
 
-        var existingUser = await _userRepository.GetByUsernameAsync(request.Username);
+        // En el nuevo esquema, Username es el Email
+        var existingUser = await _userRepository.GetByEmailAsync(request.Username);
         if (existingUser != null)
-            throw new ArgumentException("El nombre de usuario ya existe.");
+            throw new ArgumentException("El correo electrónico ya está registrado.");
 
         var user = new User
         {
-            Username = request.Username,
-            PasswordHash = request.Password,
             FullName = request.FullName,
+            Email = request.Username,
+            PasswordHash = request.Password,
             IdentityNumber = request.IdentityNumber,
             CreatedAt = DateTime.Now,
             CreatedBy = currentUsername,
             IsActive = true
         };
 
-        foreach (var roleName in request.RoleNames)
+        // Tomar el primer rol de la lista (en el nuevo esquema es uno solo)
+        if (request.RoleNames.Any())
         {
-            var role = await _roleRepository.GetByNameAsync(roleName);
-            if (role != null) user.Roles.Add(role);
+            var role = await _roleRepository.GetByNameAsync(request.RoleNames.First());
+            if (role != null) user.RoleId = role.Id;
         }
 
         foreach (var permName in request.PermissionNames)
@@ -61,15 +63,15 @@ public class UserService : IUserService
         if (request.IdentityNumber.Length != 15)
             throw new ArgumentException("La identidad debe tener exactamente 15 caracteres (formato: XXXX-XXXX-XXXXX).");
 
-        var existingUser = await _userRepository.GetByUsernameAsync(request.Username);
+        var existingUser = await _userRepository.GetByEmailAsync(request.Username);
         if (existingUser != null && existingUser.Id != request.Id)
-            throw new ArgumentException("El nombre de usuario ya está siendo usado por otro usuario.");
+            throw new ArgumentException("El correo electrónico ya está siendo usado por otro usuario.");
 
         var user = await _userRepository.GetByIdAsync(request.Id);
         if (user == null) throw new KeyNotFoundException("Usuario no encontrado.");
 
-        user.Username = request.Username;
         user.FullName = request.FullName;
+        user.Email = request.Username;
         user.IdentityNumber = request.IdentityNumber;
         user.UpdatedAt = DateTime.Now;
         user.UpdatedBy = currentUsername;
@@ -77,11 +79,10 @@ public class UserService : IUserService
         if (!string.IsNullOrEmpty(request.Password))
             user.PasswordHash = request.Password;
 
-        user.Roles.Clear();
-        foreach (var roleName in request.RoleNames)
+        if (request.RoleNames.Any())
         {
-            var role = await _roleRepository.GetByNameAsync(roleName);
-            if (role != null) user.Roles.Add(role);
+            var role = await _roleRepository.GetByNameAsync(request.RoleNames.First());
+            if (role != null) user.RoleId = role.Id;
         }
 
         user.AdditionalPermissions.Clear();
@@ -99,7 +100,7 @@ public class UserService : IUserService
         var users = await _userRepository.GetAllAsync();
         return users.Select(u => new UserResponseDto(
             u.Id,
-            u.Username,
+            u.Email, // Usamos Email como Username para el DTO
             u.FullName,
             u.IdentityNumber,
             u.IsActive,
@@ -107,7 +108,7 @@ public class UserService : IUserService
             u.CreatedBy,
             u.UpdatedAt,
             u.UpdatedBy,
-            u.Roles.Select(r => r.Name).ToList(),
+            new List<string> { u.Role.Name }, // Adaptamos el rol único a la lista del DTO
             u.AdditionalPermissions.Select(p => p.Name).ToList()
         ));
     }

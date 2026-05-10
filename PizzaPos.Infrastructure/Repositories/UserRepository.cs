@@ -14,13 +14,13 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetByUsernameAsync(string username)
+    public async Task<User?> GetByEmailAsync(string email)
     {
         return await _context.Users
-            .Include(u => u.Roles)
+            .Include(u => u.Role)
                 .ThenInclude(r => r.Permissions)
             .Include(u => u.AdditionalPermissions)
-            .FirstOrDefaultAsync(u => u.Username == username);
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public async Task AddAsync(User user)
@@ -38,14 +38,15 @@ public class UserRepository : IUserRepository
     public async Task<IEnumerable<User>> GetAllAsync()
     {
         return await _context.Users
-            .Include(u => u.Roles)
+            .Include(u => u.Role)
             .ToListAsync();
     }
 
     public async Task<User?> GetByIdAsync(int id)
     {
         return await _context.Users
-            .Include(u => u.Roles)
+            .Include(u => u.Role)
+                .ThenInclude(r => r.Permissions)
             .Include(u => u.AdditionalPermissions)
             .FirstOrDefaultAsync(u => u.Id == id);
     }
