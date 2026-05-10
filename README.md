@@ -12,6 +12,7 @@ Sistema de Punto de Venta (POS) profesional para una Pizzería, desarrollado con
   - Catálogo de Productos y Precios.
   - Gestión de Usuarios y Roles (RBAC).
   - Configuración de Seguridad (Permisos granulares).
+- **Pruebas Unitarias**: Suite de tests automatizados para asegurar la integridad de los cálculos y la seguridad.
 
 ## 🛠️ Estructura del Proyecto
 - **PizzaPos.Api**: Backend ASP.NET Core Web API siguiendo arquitectura modular.
@@ -37,6 +38,17 @@ Puedes iniciar todo el sistema (API + Frontend) con un solo comando:
 ```powershell
 .\run-all.ps1
 ```
+
+### 🧪 Pruebas Unitarias
+Para ejecutar la suite de pruebas:
+```bash
+dotnet test PizzaPos.Tests
+```
+*Las pruebas cubren la lógica de hasehado de contraseñas, validación de JWT y cálculos de pedidos con compensaciones por retraso.*
+Para más detalles, consulta el documento de [Documentación de Pruebas (TESTING.md)](TESTING.md).
+
+### 🔐 Gestión de Secretos (Ejemplo)
+El sistema está preparado para manejar secretos de forma segura. Consulta `PizzaPos.Infrastructure/Examples/SecretManagementExample.cs` para ver cómo se abstraen las llaves de API y credenciales de BD.
 
 #### Usando Batch:
 ```cmd
