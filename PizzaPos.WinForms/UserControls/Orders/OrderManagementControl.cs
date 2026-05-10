@@ -247,7 +247,7 @@ public partial class OrderManagementControl : UserControl
             flpItems.Controls.Add(lblItem);
         }
 
-        lblDetailAddress.Text = $"📍 {order.DeliveryAddress}\n📞 {order.CustomerPhone}";
+        lblDetailAddress.Text = $"👤 {order.CustomerName}\n📍 {order.DeliveryAddress}\n📞 {order.CustomerPhone}";
         lblDetailNotes.Text = string.IsNullOrEmpty(order.Notes) ? "Sin notas" : order.Notes;
     }
 

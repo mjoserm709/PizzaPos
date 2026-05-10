@@ -51,8 +51,9 @@ public partial class SecurityManagementControl : UserControl
 
     private void ApplyPermissions()
     {
-        bool canManageRoles = _permissions.Contains("roles.manage");
-        bool canManagePerms = _permissions.Contains("permissions.manage");
+        bool canManageSecurity = _permissions.Contains("seguridad.manage");
+        bool canManageRoles = canManageSecurity;
+        bool canManagePerms = canManageSecurity;
 
         // Configuración de Roles
         tabRoles.Enabled = canManageRoles;
