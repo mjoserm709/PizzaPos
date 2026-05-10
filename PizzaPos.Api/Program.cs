@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddDbContext<PizzaPosDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -79,35 +79,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<PizzaPosDbContext>();
-    context.Database.EnsureCreated();
-    
-    // Crear tabla de compensaciones manualmente si no existe
-    var conn = context.Database.GetDbConnection();
-    conn.Open();
-    using var cmd = conn.CreateCommand();
-    
-    // Primero borramos la tabla mal creada para que se cree con el esquema correcto
-    cmd.CommandText = "DROP TABLE IF EXISTS Compensations;";
-    cmd.ExecuteNonQuery();
-
-    cmd.CommandText = @"
-        CREATE TABLE IF NOT EXISTS Compensations (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            CustomerId INTEGER NOT NULL,
-            SourceOrderId INTEGER,
-            Description TEXT,
-            DiscountAmount REAL,
-            IsRedeemed BOOLEAN DEFAULT 0,
-            IsActive BOOLEAN DEFAULT 1,
-            CreatedAt DATETIME,
-            CreatedBy TEXT,
-            UpdatedAt DATETIME,
-            UpdatedBy TEXT,
-            RedeemedAt DATETIME,
-            FOREIGN KEY(CustomerId) REFERENCES Customers(Id),
-            FOREIGN KEY(SourceOrderId) REFERENCES Orders(Id)
-        );";
-    cmd.ExecuteNonQuery();
+    // context.Database.EnsureCreated(); // Usaremos el script SQL Server manual o migraciones
 }
 
 // Configure the HTTP request pipeline.

@@ -59,13 +59,34 @@ public class PizzaPosDbContext : DbContext
             .HasMany(r => r.Permissions)
             .WithMany(p => p.Roles)
             .UsingEntity<Dictionary<string, object>>(
-                "rol_permisos",
-                j => j.HasOne<Permission>().WithMany().HasForeignKey("permiso_id"),
-                j => j.HasOne<Role>().WithMany().HasForeignKey("rol_id"),
+                "RolePermissions",
+                j => j.HasOne<Permission>().WithMany().HasForeignKey("PermissionId"),
+                j => j.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
                 j => {
-                    j.HasKey("rol_id", "permiso_id");
-                    j.ToTable("rol_permisos");
+                    j.HasKey("RoleId", "PermissionId");
+                    j.ToTable("RolePermissions");
                 });
+        
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.AdditionalPermissions)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "UserPermissions",
+                j => j.HasOne<Permission>().WithMany().HasForeignKey("PermissionId"),
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId"),
+                j => {
+                    j.HasKey("UserId", "PermissionId");
+                    j.ToTable("UserPermissions");
+                });
+
+        // Configuración de Decimales para SQL Server
+        modelBuilder.Entity<Product>().Property(p => p.Price).HasColumnType("decimal(18,2)");
+        modelBuilder.Entity<Order>().Property(o => o.Subtotal).HasColumnType("decimal(18,2)");
+        modelBuilder.Entity<Order>().Property(o => o.TaxAmount).HasColumnType("decimal(18,2)");
+        modelBuilder.Entity<Order>().Property(o => o.Total).HasColumnType("decimal(18,2)");
+        modelBuilder.Entity<OrderDetail>().Property(d => d.UnitPrice).HasColumnType("decimal(18,2)");
+        modelBuilder.Entity<OrderDetail>().Property(d => d.Total).HasColumnType("decimal(18,2)");
+        modelBuilder.Entity<Compensation>().Property(c => c.DiscountAmount).HasColumnType("decimal(18,2)");
 
         var now = DateTime.Now;
 
@@ -134,8 +155,8 @@ public class PizzaPosDbContext : DbContext
         modelBuilder.Entity<Permission>().HasData(permissions);
 
         // 7. Mapeo Admin -> Todos los permisos
-        var adminPerms = permissions.Select(p => new { rol_id = 1, permiso_id = p.Id }).ToList();
-        modelBuilder.Entity("rol_permisos").HasData(adminPerms);
+        var adminPerms = permissions.Select(p => new { RoleId = 1, PermissionId = p.Id }).ToList();
+        modelBuilder.Entity("RolePermissions").HasData(adminPerms);
 
         // 8. Usuario Admin Principal
         modelBuilder.Entity<User>().HasData(new User { 
