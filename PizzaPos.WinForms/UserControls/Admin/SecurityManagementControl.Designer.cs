@@ -137,6 +137,7 @@ partial class SecurityManagementControl
         this.btnSavePerm.BackColor = System.Drawing.Color.FromArgb(40, 167, 69);
         this.btnSavePerm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnSavePerm.ForeColor = System.Drawing.Color.White;
+        this.btnSavePerm.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
         this.btnSavePerm.Location = new System.Drawing.Point(40, 200);
         this.btnSavePerm.Size = new System.Drawing.Size(120, 40);
         this.btnSavePerm.Text = "Guardar";
@@ -145,6 +146,7 @@ partial class SecurityManagementControl
         this.btnCancelPerm.BackColor = System.Drawing.Color.Gray;
         this.btnCancelPerm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnCancelPerm.ForeColor = System.Drawing.Color.White;
+        this.btnCancelPerm.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
         this.btnCancelPerm.Location = new System.Drawing.Point(170, 200);
         this.btnCancelPerm.Size = new System.Drawing.Size(120, 40);
         this.btnCancelPerm.Text = "Cancelar";
@@ -233,6 +235,7 @@ partial class SecurityManagementControl
         this.btnSaveRole.BackColor = System.Drawing.Color.FromArgb(40, 167, 69);
         this.btnSaveRole.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnSaveRole.ForeColor = System.Drawing.Color.White;
+        this.btnSaveRole.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
         this.btnSaveRole.Location = new System.Drawing.Point(40, 410);
         this.btnSaveRole.Size = new System.Drawing.Size(150, 40);
         this.btnSaveRole.Text = "Guardar Rol";
@@ -241,6 +244,7 @@ partial class SecurityManagementControl
         this.btnCancelRole.BackColor = System.Drawing.Color.Gray;
         this.btnCancelRole.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnCancelRole.ForeColor = System.Drawing.Color.White;
+        this.btnCancelRole.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
         this.btnCancelRole.Location = new System.Drawing.Point(200, 410);
         this.btnCancelRole.Size = new System.Drawing.Size(120, 40);
         this.btnCancelRole.Text = "Cancelar";

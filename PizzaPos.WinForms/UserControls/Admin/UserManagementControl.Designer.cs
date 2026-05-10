@@ -201,6 +201,7 @@ partial class UserManagementControl
         this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(211)))), ((int)(((byte)(47)))), ((int)(((byte)(47)))));
         this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnSave.ForeColor = System.Drawing.Color.White;
+        this.btnSave.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
         this.btnSave.Location = new System.Drawing.Point(40, 350);
         this.btnSave.Size = new System.Drawing.Size(150, 40);
         this.btnSave.Text = "Guardar Usuario";
@@ -209,6 +210,7 @@ partial class UserManagementControl
         this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
         this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
         this.btnCancel.ForeColor = System.Drawing.Color.White;
+        this.btnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
         this.btnCancel.Location = new System.Drawing.Point(200, 350);
         this.btnCancel.Size = new System.Drawing.Size(120, 40);
         this.btnCancel.Text = "Cancelar";

@@ -432,11 +432,6 @@ public partial class OrderCreationControl : UserControl
 
                 ToastNotification.Success("¡Pedido creado con éxito!");
                 
-                if (result?.Data != null)
-                {
-                    ReceiptService.Print(result.Data);
-                }
-
                 _cart.Clear();
                 _selectedCustomer = null;
                 lblCustomerInfo.Text = "No se ha seleccionado cliente";

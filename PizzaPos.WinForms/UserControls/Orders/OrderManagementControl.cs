@@ -322,6 +322,13 @@ public partial class OrderManagementControl : UserControl
             if (res.IsSuccessStatusCode)
             {
                 ToastNotification.Success("Estado actualizado");
+                
+                // Si el pedido se está despachando (pasa de Listo a En Camino), imprimir factura
+                if (order.StatusId == 4)
+                {
+                    ReceiptService.Print(order);
+                }
+
                 await LoadOrders();
             }
         }
