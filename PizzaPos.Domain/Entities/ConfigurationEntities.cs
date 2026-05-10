@@ -4,7 +4,7 @@ public class OrderStatus : BaseEntity
 {
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public int Order { get; set; }
+    public int DisplayOrder { get; set; }
     public bool IsActive { get; set; } = true;
 }
 
@@ -19,7 +19,7 @@ public class DeliveryStatus : BaseEntity
 {
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public int Order { get; set; }
+    public int DisplayOrder { get; set; }
     public bool IsActive { get; set; } = true;
 }
 

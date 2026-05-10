@@ -90,13 +90,16 @@ namespace PizzaPos.WinForms.Utils
             if (Application.OpenForms.Count > 0)
             {
                 var mainForm = Application.OpenForms[0];
-                if (mainForm.InvokeRequired)
+                if (mainForm != null)
                 {
-                    mainForm.BeginInvoke(new Action(() => new ToastNotification(title, message, color).Show()));
-                }
-                else
-                {
-                    new ToastNotification(title, message, color).Show();
+                    if (mainForm.InvokeRequired)
+                    {
+                        mainForm.BeginInvoke(new Action(() => new ToastNotification(title, message, color).Show()));
+                    }
+                    else
+                    {
+                        new ToastNotification(title, message, color).Show();
+                    }
                 }
             }
         }

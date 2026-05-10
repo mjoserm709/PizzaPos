@@ -34,10 +34,11 @@ partial class MainForm
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(239)))), ((int)(((byte)(218)))));
         this.ClientSize = new System.Drawing.Size(1350, 720);
         this.Controls.Add(this.pnlContent);
-        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
         this.MaximizeBox = false;
         this.Name = "MainForm";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+        this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
         this.Text = "Pizza POS - Panel de Control";
         this.ResumeLayout(false);
     }

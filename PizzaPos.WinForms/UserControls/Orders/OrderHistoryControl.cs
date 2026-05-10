@@ -12,18 +12,18 @@ public partial class OrderHistoryControl : UserControl
     private static readonly HttpClient _httpClient = new HttpClient();
     private List<OrderResponseDto> _orders = new();
 
-    private DataGridView dgvHistory;
-    private DateTimePicker dtpFrom;
-    private DateTimePicker dtpTo;
-    private TextBox txtSearch;
-    private Button btnSearch;
+    private DataGridView dgvHistory = null!;
+    private DateTimePicker dtpFrom = null!;
+    private DateTimePicker dtpTo = null!;
+    private TextBox txtSearch = null!;
+    private Button btnSearch = null!;
     
-    private Label lblStatTotal;
-    private Label lblStatCount;
-    private Label lblStatCancelled;
-    private Label lblStatPending;
-    private Label lblStatKitchen;
-    private Label lblStatDelivery;
+    private Label lblStatTotal = null!;
+    private Label lblStatCount = null!;
+    private Label lblStatCancelled = null!;
+    private Label lblStatPending = null!;
+    private Label lblStatKitchen = null!;
+    private Label lblStatDelivery = null!;
 
     public OrderHistoryControl(string token)
     {

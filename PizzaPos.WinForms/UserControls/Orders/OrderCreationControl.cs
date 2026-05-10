@@ -9,6 +9,7 @@ namespace PizzaPos.WinForms.UserControls.Orders;
 
 public partial class OrderCreationControl : UserControl
 {
+
     private readonly string _token;
     private static readonly HttpClient _httpClient = new HttpClient();
     
@@ -94,16 +95,41 @@ public partial class OrderCreationControl : UserControl
                 if (result?.Data != null)
                 {
                     _productsCatalog = new BindingList<ProductModel>(result.Data.Where(p => p.IsActive).ToList());
-                    RenderProductCards(_productsCatalog);
+                    RenderProductTabs(_productsCatalog);
                 }
             }
         }
         catch (Exception ex) { ToastNotification.Error("Error cargando productos: " + ex.Message); }
     }
 
-    private void RenderProductCards(IEnumerable<ProductModel> products)
+    private void RenderProductTabs(IEnumerable<ProductModel> products)
     {
-        flowProducts.Controls.Clear();
+        tabsProducts.TabPages.Clear();
+        
+        var grouped = products.GroupBy(p => p.Category?.Name ?? "General");
+        
+        foreach (var group in grouped)
+        {
+            var tabPage = new TabPage(group.Key);
+            tabPage.BackColor = Color.White;
+            
+            var flow = new FlowLayoutPanel {
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor = Color.Transparent,
+                Padding = new Padding(10)
+            };
+            
+            RenderCardsInFlow(group, flow);
+            
+            tabPage.Controls.Add(flow);
+            tabsProducts.TabPages.Add(tabPage);
+        }
+    }
+
+    private void RenderCardsInFlow(IEnumerable<ProductModel> products, FlowLayoutPanel container)
+    {
+        container.Controls.Clear();
         foreach (var product in products)
         {
             var card = new Panel {
@@ -153,7 +179,7 @@ public partial class OrderCreationControl : UserControl
             card.Controls.Add(btnAdd);
             card.Controls.Add(lblPrice);
             card.Controls.Add(lblName);
-            flowProducts.Controls.Add(card);
+            container.Controls.Add(card);
         }
     }
 
@@ -368,7 +394,7 @@ public partial class OrderCreationControl : UserControl
         {
             CustomerId = _selectedCustomer.Id,
             AddressId = (cmbAddress.SelectedItem as AddressModel)?.Id,
-            PaymentMethodId = (cmbPaymentMethod.SelectedItem as dynamic).Id,
+            PaymentMethodId = (cmbPaymentMethod.SelectedItem as dynamic)?.Id ?? 1,
             Items = _cart.Select(i => new
             {
                 ProductId = i.ProductId,
@@ -428,12 +454,15 @@ public partial class OrderCreationControl : UserControl
     private void txtSearchProduct_TextChanged(object sender, EventArgs e)
     {
         string term = txtSearchProduct.Text.ToLower();
+        
+        // Si hay búsqueda, mostramos todo en una pestaña temporal o simplemente filtramos en cada flow
+        // Opción: Filtrar en la pestaña actual o regenerar todo
         var filtered = _productsCatalog.Where(p => 
             p.Name.ToLower().Contains(term) || 
             (p.Description?.ToLower().Contains(term) ?? false)
         ).ToList();
         
-        RenderProductCards(filtered);
+        RenderProductTabs(filtered);
     }
 }
 

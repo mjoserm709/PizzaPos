@@ -374,4 +374,40 @@ INSERT INTO ProductCategories (Code, Name) VALUES
 INSERT INTO AppConfigs ([Key], Value, Description) 
 VALUES ('IVA_PERCENTAGE', '15', 'Porcentaje de IVA aplicado');
 
+-- 5.11 Product Sizes
+INSERT INTO ProductSizes (Code, Name) VALUES 
+('personal', 'Personal'),
+('mediana', 'Mediana'),
+('familiar', 'Familiar');
+
+-- 5.12 Products
+INSERT INTO Products (CategoryId, SizeId, Name, Price, Description) VALUES 
+(1, 1, 'Pizza Pepperoni Personal', 180.00, 'Pizza con pepperoni y queso mozzarella'),
+(1, 2, 'Pizza Pepperoni Mediana', 280.00, 'Pizza con pepperoni y queso mozzarella'),
+(1, 3, 'Pizza Pepperoni Familiar', 450.00, 'Pizza con pepperoni y queso mozzarella'),
+(1, 1, 'Pizza Suprema Personal', 220.00, 'Jamón, pepperoni, carne, cebolla, chile verde, hongos'),
+(1, 2, 'Pizza Suprema Mediana', 350.00, 'Jamón, pepperoni, carne, cebolla, chile verde, hongos'),
+(1, 3, 'Pizza Suprema Familiar', 520.00, 'Jamón, pepperoni, carne, cebolla, chile verde, hongos'),
+(1, 1, 'Pizza Jamón y Hongos Personal', 190.00, 'Jamón y hongos frescos'),
+(1, 2, 'Pizza Jamón y Hongos Mediana', 300.00, 'Jamón y hongos frescos'),
+(1, 3, 'Pizza Jamón y Hongos Familiar', 480.00, 'Jamón y hongos frescos'),
+(2, NULL, 'Coca Cola 600ml', 35.00, 'Refresco de cola'),
+(2, NULL, 'Coca Cola 1.5L', 65.00, 'Refresco de cola familiar'),
+(2, NULL, 'Té Frío Limón', 30.00, 'Té natural con limón'),
+(2, NULL, 'Agua Embotellada', 20.00, 'Agua purificada 500ml'),
+(4, NULL, 'Palitroques con Queso', 95.00, 'Pan horneado con ajo y mozzarella'),
+(4, NULL, 'Alitas de Pollo (8 pcs)', 185.00, 'Alitas con salsa buffalo o barbacoa'),
+(3, NULL, 'Pie de Manzana', 45.00, 'Postre tradicional de manzana'),
+(3, NULL, 'Brownie con Helado', 60.00, 'Brownie de chocolate caliente con helado de vainilla');
+-- 5.13 Customers
+INSERT INTO Customers (FullName, Phone, Email, CreatedBy) VALUES 
+('Juan Perez', '99887766', 'juan@email.com', 'System'),
+('Maria Rodriguez', '88776655', 'maria@email.com', 'System'),
+('Carlos Lopez', '77665544', 'carlos@email.com', 'System');
+
+INSERT INTO CustomerAddresses (CustomerId, AddressLine1, IsDefault) VALUES 
+(1, 'Residencial Los Pinos, Bloque A, Casa 5', 1),
+(2, 'Colonia El Prado, Calle Principal #123', 1),
+(3, 'Barrio El Centro, frente a Parque Central', 1);
+
 PRINT 'Database schema and seed data for SQL Server created successfully.';

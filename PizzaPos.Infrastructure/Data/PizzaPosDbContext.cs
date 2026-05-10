@@ -94,13 +94,13 @@ public class PizzaPosDbContext : DbContext
         
         // 1. Estados de Pedido
         modelBuilder.Entity<OrderStatus>().HasData(
-            new OrderStatus { Id = 1, Code = "pendiente", Name = "Pendiente", Order = 1, CreatedAt = now, CreatedBy = "System" },
-            new OrderStatus { Id = 2, Code = "confirmado", Name = "Confirmado", Order = 2, CreatedAt = now, CreatedBy = "System" },
-            new OrderStatus { Id = 3, Code = "en_preparacion", Name = "En preparación", Order = 3, CreatedAt = now, CreatedBy = "System" },
-            new OrderStatus { Id = 4, Code = "listo", Name = "Listo", Order = 4, CreatedAt = now, CreatedBy = "System" },
-            new OrderStatus { Id = 5, Code = "en_camino", Name = "En camino", Order = 5, CreatedAt = now, CreatedBy = "System" },
-            new OrderStatus { Id = 6, Code = "entregado", Name = "Entregado", Order = 6, CreatedAt = now, CreatedBy = "System" },
-            new OrderStatus { Id = 7, Code = "cancelado", Name = "Cancelado", Order = 7, CreatedAt = now, CreatedBy = "System" }
+            new OrderStatus { Id = 1, Code = "pendiente", Name = "Pendiente", DisplayOrder = 1, CreatedAt = now, CreatedBy = "System" },
+            new OrderStatus { Id = 2, Code = "confirmado", Name = "Confirmado", DisplayOrder = 2, CreatedAt = now, CreatedBy = "System" },
+            new OrderStatus { Id = 3, Code = "en_preparacion", Name = "En preparación", DisplayOrder = 3, CreatedAt = now, CreatedBy = "System" },
+            new OrderStatus { Id = 4, Code = "listo", Name = "Listo", DisplayOrder = 4, CreatedAt = now, CreatedBy = "System" },
+            new OrderStatus { Id = 5, Code = "en_camino", Name = "En camino", DisplayOrder = 5, CreatedAt = now, CreatedBy = "System" },
+            new OrderStatus { Id = 6, Code = "entregado", Name = "Entregado", DisplayOrder = 6, CreatedAt = now, CreatedBy = "System" },
+            new OrderStatus { Id = 7, Code = "cancelado", Name = "Cancelado", DisplayOrder = 7, CreatedAt = now, CreatedBy = "System" }
         );
 
         // 2. Estados de Pago

@@ -27,4 +27,12 @@ public class ProductModel
     public decimal Price { get; set; }
     public string? Description { get; set; }
     public bool IsActive { get; set; }
+    public int CategoryId { get; set; }
+    public ProductCategoryModel? Category { get; set; }
+}
+
+public class ProductCategoryModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
 }
