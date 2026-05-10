@@ -13,6 +13,7 @@ Sistema de Punto de Venta (POS) profesional para una Pizzería, desarrollado con
   - Gestión de Usuarios y Roles (RBAC).
   - Configuración de Seguridad (Permisos granulares).
 - **Pruebas Unitarias**: Suite de tests automatizados para asegurar la integridad de los cálculos y la seguridad.
+- **Respuestas Estandarizadas**: Todas las comunicaciones API-Frontend usan el patrón `DynamicResponse<T>`, garantizando mensajes de éxito y error consistentes y descriptivos.
 
 ## 🛠️ Estructura del Proyecto
 - **PizzaPos.Api**: Backend ASP.NET Core Web API siguiendo arquitectura modular.
@@ -54,6 +55,18 @@ El sistema está preparado para manejar secretos de forma segura. Consulta `Pizz
 ```cmd
 run-all.bat
 ```
+
+### 📊 Estandarización de Respuestas
+La API utiliza un modelo genérico para todas sus respuestas:
+```json
+{
+  "success": true,
+  "message": "Mensaje descriptivo desde el servidor",
+  "data": { ... },
+  "errors": []
+}
+```
+Esto permite que el Frontend muestre notificaciones precisas generadas directamente por la lógica de negocio del Backend.
 
 ## 👤 Usuarios por Defecto
 - **Admin**: `admin@pizzeria.com` / `admin123`

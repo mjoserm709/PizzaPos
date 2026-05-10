@@ -93,8 +93,16 @@ public partial class ProductManagementControl : UserControl
             var res = await _httpClient.DeleteAsync($"http://localhost:5267/api/products/{product.Id}");
             if (res.IsSuccessStatusCode)
             {
-                ToastNotification.Success("Estado del producto actualizado");
+                var successJson = await res.Content.ReadAsStringAsync();
+                var successResult = JsonSerializer.Deserialize<DynamicResponse<string>>(successJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ToastNotification.Success(successResult?.Message ?? "Estado del producto actualizado");
                 await LoadProducts();
+            }
+            else
+            {
+                var errorJson = await res.Content.ReadAsStringAsync();
+                var errorResult = JsonSerializer.Deserialize<DynamicResponse<string>>(errorJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ToastNotification.Error(errorResult?.Message ?? "Error al actualizar estado");
             }
         }
         catch (Exception ex) { ToastNotification.Error("Error: " + ex.Message); }

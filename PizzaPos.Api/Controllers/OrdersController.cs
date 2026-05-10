@@ -5,6 +5,7 @@ using PizzaPos.Application.DTOs;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using PizzaPos.Api.Hubs;
+using PizzaPos.Application.Common;
 
 namespace PizzaPos.Api.Controllers;
 
@@ -26,21 +27,21 @@ public class OrdersController : ControllerBase
     public async Task<IActionResult> GetIvaRate()
     {
         var rate = await _orderService.GetIvaRateAsync();
-        return Ok(new { success = true, rate });
+        return Ok(DynamicResponse<decimal>.CreateSuccess(rate));
     }
 
     [HttpGet("active")]
     public async Task<IActionResult> GetActive()
     {
         var results = await _orderService.GetActiveOrdersAsync();
-        return Ok(new { success = true, data = results });
+        return Ok(DynamicResponse<IEnumerable<OrderResponseDto>>.CreateSuccess(results));
     }
 
     [HttpGet("history")]
     public async Task<IActionResult> GetHistory([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? searchTerm)
     {
         var results = await _orderService.GetOrderHistoryAsync(startDate, endDate, searchTerm);
-        return Ok(new { success = true, data = results });
+        return Ok(DynamicResponse<IEnumerable<OrderResponseDto>>.CreateSuccess(results));
     }
 
     [HttpPost]
@@ -54,11 +55,11 @@ public class OrdersController : ControllerBase
             // Notificación en tiempo real
             await _hubContext.Clients.All.SendAsync("NewOrderReceived", result);
             
-            return Ok(new { success = true, message = "Pedido creado correctamente", data = result });
+            return Ok(DynamicResponse<OrderResponseDto>.CreateSuccess(result, "Pedido creado correctamente"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { success = false, message = ex.Message });
+            return BadRequest(DynamicResponse<string>.CreateError(ex.Message));
         }
     }
 
@@ -73,11 +74,11 @@ public class OrdersController : ControllerBase
             // Notificación en tiempo real
             await _hubContext.Clients.All.SendAsync("OrderStatusChanged", new { OrderId = id, Status = statusCode });
             
-            return Ok(new { success = true, message = "Estado actualizado" });
+            return Ok(DynamicResponse<string>.CreateSuccess("Estado actualizado"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { success = false, message = ex.Message });
+            return BadRequest(DynamicResponse<string>.CreateError(ex.Message));
         }
     }
 
@@ -85,14 +86,14 @@ public class OrdersController : ControllerBase
     public async Task<IActionResult> GetByStatus(string statusCode)
     {
         var results = await _orderService.GetOrdersByStatusAsync(statusCode);
-        return Ok(new { success = true, data = results });
+        return Ok(DynamicResponse<IEnumerable<OrderResponseDto>>.CreateSuccess(results));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var result = await _orderService.GetOrderByIdAsync(id);
-        if (result == null) return NotFound(new { success = false, message = "Pedido no encontrado" });
-        return Ok(new { success = true, data = result });
+        if (result == null) return NotFound(DynamicResponse<string>.CreateError("Pedido no encontrado"));
+        return Ok(DynamicResponse<OrderResponseDto>.CreateSuccess(result));
     }
 }

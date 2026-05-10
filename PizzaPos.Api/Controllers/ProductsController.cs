@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaPos.Domain.Entities;
 using PizzaPos.Domain.Repositories;
 using System.Security.Claims;
+using PizzaPos.Application.Common;
 
 namespace PizzaPos.Api.Controllers;
 
@@ -22,15 +23,15 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var results = await _productRepository.GetAllAsync();
-        return Ok(new { success = true, data = results });
+        return Ok(DynamicResponse<IEnumerable<Product>>.CreateSuccess(results));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var result = await _productRepository.GetByIdAsync(id);
-        if (result == null) return NotFound(new { success = false, message = "Producto no encontrado" });
-        return Ok(new { success = true, data = result });
+        if (result == null) return NotFound(DynamicResponse<string>.CreateError("Producto no encontrado"));
+        return Ok(DynamicResponse<Product>.CreateSuccess(result));
     }
 
     [HttpPost]
@@ -42,11 +43,11 @@ public class ProductsController : ControllerBase
             product.CreatedAt = DateTime.Now;
             product.CreatedBy = currentEmail;
             await _productRepository.AddAsync(product);
-            return Ok(new { success = true, message = "Producto creado correctamente", data = product });
+            return Ok(DynamicResponse<Product>.CreateSuccess(product, "Producto creado correctamente"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { success = false, message = ex.Message });
+            return BadRequest(DynamicResponse<string>.CreateError(ex.Message));
         }
     }
 
@@ -65,11 +66,11 @@ public class ProductsController : ControllerBase
             existing.SizeId = product.SizeId;
             
             await _productRepository.UpdateAsync(existing);
-            return Ok(new { success = true, message = "Producto actualizado correctamente" });
+            return Ok(DynamicResponse<string>.CreateSuccess("Producto actualizado correctamente"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { success = false, message = ex.Message });
+            return BadRequest(DynamicResponse<string>.CreateError(ex.Message));
         }
     }
 
@@ -83,11 +84,11 @@ public class ProductsController : ControllerBase
 
             existing.IsActive = !existing.IsActive;
             await _productRepository.UpdateAsync(existing);
-            return Ok(new { success = true, message = $"Producto {(existing.IsActive ? "activado" : "desactivado")} correctamente" });
+            return Ok(DynamicResponse<string>.CreateSuccess($"Producto {(existing.IsActive ? "activado" : "desactivado")} correctamente"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { success = false, message = ex.Message });
+            return BadRequest(DynamicResponse<string>.CreateError(ex.Message));
         }
     }
 
@@ -95,13 +96,13 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetCategories()
     {
         var results = await _productRepository.GetCategoriesAsync();
-        return Ok(new { success = true, data = results });
+        return Ok(DynamicResponse<IEnumerable<ProductCategory>>.CreateSuccess(results));
     }
 
     [HttpGet("sizes")]
     public async Task<IActionResult> GetSizes()
     {
         var results = await _productRepository.GetSizesAsync();
-        return Ok(new { success = true, data = results });
+        return Ok(DynamicResponse<IEnumerable<ProductSize>>.CreateSuccess(results));
     }
 }

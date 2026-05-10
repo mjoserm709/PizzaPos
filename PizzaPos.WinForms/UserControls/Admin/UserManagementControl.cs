@@ -166,13 +166,16 @@ public partial class UserManagementControl : UserControl
 
                     if (response.IsSuccessStatusCode)
                     {
-                        ToastNotification.Success($"Usuario '{user.Username}' {(newStatus ? "activado" : "desactivado")} correctamente.");
+                        var successJson = await response.Content.ReadAsStringAsync();
+                        var successResult = JsonSerializer.Deserialize<DynamicResponse<string>>(successJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        ToastNotification.Success(successResult?.Message ?? $"Usuario '{user.Username}' actualizado correctamente.");
                         await LoadUsers();
                     }
                     else 
                     { 
                         var errorJson = await response.Content.ReadAsStringAsync();
-                        ToastNotification.Error($"Error del servidor: {response.StatusCode}"); 
+                        var errorResult = JsonSerializer.Deserialize<DynamicResponse<string>>(errorJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        ToastNotification.Error(errorResult?.Message ?? "Error al actualizar estado"); 
                     }
                 }
                 catch (Exception ex) { ToastNotification.Error($"Error de conexión: {ex.Message}"); }
@@ -281,7 +284,9 @@ public partial class UserManagementControl : UserControl
 
             if (response.IsSuccessStatusCode)
             {
-                ToastNotification.Success($"Usuario '{userData.username}' guardado correctamente.");
+                var successJson = await response.Content.ReadAsStringAsync();
+                var successResult = JsonSerializer.Deserialize<DynamicResponse<string>>(successJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ToastNotification.Success(successResult?.Message ?? $"Usuario '{userData.username}' guardado correctamente.");
                 pnlForm.Visible = false;
                 pnlList.Visible = true;
                 await LoadUsers();

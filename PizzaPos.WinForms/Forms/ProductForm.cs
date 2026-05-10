@@ -99,13 +99,17 @@ public partial class ProductForm : Form
 
             if (res.IsSuccessStatusCode)
             {
-                ToastNotification.Success("Producto guardado correctamente");
+                var successJson = await res.Content.ReadAsStringAsync();
+                var successResult = JsonSerializer.Deserialize<DynamicResponse<JsonElement>>(successJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ToastNotification.Success(successResult?.Message ?? "Producto guardado correctamente");
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             else
             {
-                ToastNotification.Error("Error al guardar producto");
+                var errorJson = await res.Content.ReadAsStringAsync();
+                var errorResult = JsonSerializer.Deserialize<DynamicResponse<string>>(errorJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ToastNotification.Error(errorResult?.Message ?? "Error al guardar producto");
             }
         }
         catch (Exception ex) { ToastNotification.Error("Error: " + ex.Message); }

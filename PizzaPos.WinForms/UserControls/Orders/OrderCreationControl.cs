@@ -430,7 +430,7 @@ public partial class OrderCreationControl : UserControl
                     _pendingCompensation = null;
                 }
 
-                ToastNotification.Success("¡Pedido creado con éxito!");
+                ToastNotification.Success(result?.Message ?? "¡Pedido creado con éxito!");
                 
                 _cart.Clear();
                 _selectedCustomer = null;
@@ -440,7 +440,9 @@ public partial class OrderCreationControl : UserControl
             }
             else
             {
-                ToastNotification.Error("Error al crear el pedido");
+                var errorJson = await res.Content.ReadAsStringAsync();
+                var errorResult = JsonSerializer.Deserialize<DynamicResponse<string>>(errorJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ToastNotification.Error(errorResult?.Message ?? "Error al crear el pedido");
             }
         }
         catch (Exception ex) { ToastNotification.Error("Error de conexión: " + ex.Message); }
