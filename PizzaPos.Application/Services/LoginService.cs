@@ -20,6 +20,11 @@ public class LoginService : ILoginService
         // En tu esquema, el login se hace por Email
         var user = await _userRepository.GetByEmailAsync(request.Username);
 
+        if (user == null || !user.IsActive)
+        {
+            return null;
+        }
+
         bool isValid = false;
         try
         {
@@ -32,7 +37,7 @@ public class LoginService : ILoginService
             isValid = user.PasswordHash == request.Password;
         }
 
-        if (user == null || !user.IsActive || !isValid)
+        if (!isValid)
         {
             return null;
         }
@@ -40,11 +45,15 @@ public class LoginService : ILoginService
         var token = _jwtTokenGenerator.GenerateToken(user);
         
         // Un solo rol ahora
-        var roles = new List<string> { user.Role.Name };
+        var roleName = user.Role?.Name ?? "User";
+        var roles = new List<string> { roleName };
         
         // Permisos del rol + permisos adicionales
-        var permissions = user.Role.Permissions.Select(p => p.Name)
-            .Concat(user.AdditionalPermissions.Select(p => p.Name))
+        var rolePermissions = user.Role?.Permissions.Select(p => p.Name) ?? Enumerable.Empty<string>();
+        var additionalPermissions = user.AdditionalPermissions?.Select(p => p.Name) ?? Enumerable.Empty<string>();
+
+        var permissions = rolePermissions
+            .Concat(additionalPermissions)
             .Distinct()
             .ToList();
 

@@ -16,9 +16,9 @@ Sistema de Punto de Venta (POS) profesional para una Pizzería, desarrollado con
 - **Respuestas Estandarizadas**: Todas las comunicaciones API-Frontend usan el patrón `DynamicResponse<T>`, garantizando mensajes de éxito y error consistentes y descriptivos.
 
 ## 🛠️ Estructura del Proyecto
-- **PizzaPos.Api**: Backend ASP.NET Core Web API siguiendo arquitectura modular.
-- **PizzaPos.WinForms**: Frontend de escritorio moderno y reactivo.
 - **PizzaPos.Infrastructure**: Capa de persistencia con Entity Framework Core y SQL Server.
+
+Para una explicación profunda del diseño, consulta la [Documentación de Arquitectura (ARCHITECTURE.md)](ARCHITECTURE.md).
 
 ## ⚙️ Requisitos
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)

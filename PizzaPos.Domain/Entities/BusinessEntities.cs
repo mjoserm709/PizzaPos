@@ -12,8 +12,6 @@ public class Customer : BaseEntity
     [EmailAddress]
     public string? Email { get; set; }
     
-    public bool IsActive { get; set; } = true;
-    
     public ICollection<Address> Addresses { get; set; } = new List<Address>();
 }
 
@@ -26,7 +24,6 @@ public class Address : BaseEntity
     public string? City { get; set; }
     public string? Reference { get; set; }
     public bool IsPrimary { get; set; }
-    public bool IsActive { get; set; } = true;
     
     public Customer? Customer { get; set; }
 }
@@ -41,7 +38,6 @@ public class Product : BaseEntity
     
     public string? Description { get; set; }
     public decimal Price { get; set; }
-    public bool IsActive { get; set; } = true;
     
     public ProductCategory? Category { get; set; }
     public ProductSize? Size { get; set; }

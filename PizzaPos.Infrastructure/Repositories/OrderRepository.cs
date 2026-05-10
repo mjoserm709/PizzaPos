@@ -37,7 +37,7 @@ public class CustomerRepository : ICustomerRepository
         }
         
         return await _dbSet.Include(c => c.Addresses)
-                           .Where(c => c.FullName.Contains(term) || c.Phone.Contains(term) || c.Email.Contains(term))
+                           .Where(c => c.FullName.Contains(term) || c.Phone.Contains(term) || (c.Email != null && c.Email.Contains(term)))
                            .ToListAsync();
     }
 
@@ -80,7 +80,7 @@ public class OrderRepository : IOrderRepository
                            .Include(o => o.Address)
                            .Include(o => o.Details)
                                 .ThenInclude(d => d.Product)
-                           .Where(o => o.Status.Code == statusCode)
+                           .Where(o => o.Status!.Code == statusCode)
                            .OrderByDescending(o => o.CreatedAt)
                            .ToListAsync();
     }
@@ -93,7 +93,7 @@ public class OrderRepository : IOrderRepository
                            .Include(o => o.Address)
                            .Include(o => o.Details)
                                 .ThenInclude(d => d.Product)
-                           .Where(o => activeStatuses.Contains(o.Status.Code))
+                           .Where(o => activeStatuses.Contains(o.Status!.Code))
                            .OrderByDescending(o => o.CreatedAt)
                            .ToListAsync();
     }
@@ -119,7 +119,7 @@ public class OrderRepository : IOrderRepository
         if (!string.IsNullOrEmpty(searchTerm))
         {
             query = query.Where(o => o.OrderNumber.Contains(searchTerm) || 
-                                     o.Customer.FullName.Contains(searchTerm));
+                                     o.Customer!.FullName.Contains(searchTerm));
         }
 
         return await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
