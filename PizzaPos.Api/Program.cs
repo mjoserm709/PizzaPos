@@ -35,6 +35,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IAppConfigRepository, AppConfigRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
+builder.Services.AddScoped<ICompensationRepository, CompensationRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -79,6 +80,34 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<PizzaPosDbContext>();
     context.Database.EnsureCreated();
+    
+    // Crear tabla de compensaciones manualmente si no existe
+    var conn = context.Database.GetDbConnection();
+    conn.Open();
+    using var cmd = conn.CreateCommand();
+    
+    // Primero borramos la tabla mal creada para que se cree con el esquema correcto
+    cmd.CommandText = "DROP TABLE IF EXISTS Compensations;";
+    cmd.ExecuteNonQuery();
+
+    cmd.CommandText = @"
+        CREATE TABLE IF NOT EXISTS Compensations (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            CustomerId INTEGER NOT NULL,
+            SourceOrderId INTEGER,
+            Description TEXT,
+            DiscountAmount REAL,
+            IsRedeemed BOOLEAN DEFAULT 0,
+            IsActive BOOLEAN DEFAULT 1,
+            CreatedAt DATETIME,
+            CreatedBy TEXT,
+            UpdatedAt DATETIME,
+            UpdatedBy TEXT,
+            RedeemedAt DATETIME,
+            FOREIGN KEY(CustomerId) REFERENCES Customers(Id),
+            FOREIGN KEY(SourceOrderId) REFERENCES Orders(Id)
+        );";
+    cmd.ExecuteNonQuery();
 }
 
 // Configure the HTTP request pipeline.

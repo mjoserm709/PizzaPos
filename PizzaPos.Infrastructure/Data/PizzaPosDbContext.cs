@@ -29,6 +29,7 @@ public class PizzaPosDbContext : DbContext
     public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
     public DbSet<Delivery> Deliveries { get; set; } = null!;
     public DbSet<AppConfig> Configs { get; set; } = null!;
+    public DbSet<Compensation> Compensations { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,6 +52,7 @@ public class PizzaPosDbContext : DbContext
         modelBuilder.Entity<Order>().ToTable("Orders");
         modelBuilder.Entity<OrderDetail>().ToTable("OrderDetails");
         modelBuilder.Entity<Delivery>().ToTable("Deliveries");
+        modelBuilder.Entity<Compensation>().ToTable("Compensations");
 
         // Relación Muchos a Muchos Roles-Permisos (Configuración única)
         modelBuilder.Entity<Role>()

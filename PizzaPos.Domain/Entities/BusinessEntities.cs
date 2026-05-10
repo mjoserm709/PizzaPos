@@ -95,3 +95,16 @@ public class Delivery : BaseEntity
     public User? Courier { get; set; }
     public DeliveryStatus DeliveryStatus { get; set; } = null!;
 }
+
+public class Compensation : BaseEntity
+{
+    public int CustomerId { get; set; }
+    public int? SourceOrderId { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public decimal DiscountAmount { get; set; }
+    public bool IsRedeemed { get; set; }
+    public DateTime? RedeemedAt { get; set; }
+
+    public Customer Customer { get; set; } = null!;
+    public Order? SourceOrder { get; set; }
+}

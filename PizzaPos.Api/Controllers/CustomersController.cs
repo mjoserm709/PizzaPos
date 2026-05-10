@@ -12,10 +12,12 @@ namespace PizzaPos.Api.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly ICustomerRepository _customerRepository;
+    private readonly ICompensationRepository _compensationRepository;
 
-    public CustomersController(ICustomerRepository customerRepository)
+    public CustomersController(ICustomerRepository customerRepository, ICompensationRepository compensationRepository)
     {
         _customerRepository = customerRepository;
+        _compensationRepository = compensationRepository;
     }
 
     [HttpGet]
@@ -108,6 +110,34 @@ public class CustomersController : ControllerBase
             existing.IsActive = !existing.IsActive;
             await _customerRepository.UpdateAsync(existing);
             return Ok(new { success = true, message = $"Cliente {(existing.IsActive ? "activado" : "desactivado")} correctamente" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
+    [HttpGet("{id}/compensation")]
+    public async Task<IActionResult> GetPendingCompensation(int id)
+    {
+        var compensation = await _compensationRepository.GetPendingByCustomerIdAsync(id);
+        if (compensation == null) return Ok(new { success = true, data = (object?)null });
+        
+        return Ok(new { success = true, data = compensation });
+    }
+
+    [HttpPost("{id}/redeem-compensation")]
+    public async Task<IActionResult> RedeemCompensation(int id)
+    {
+        try
+        {
+            var compensation = await _compensationRepository.GetPendingByCustomerIdAsync(id);
+            if (compensation == null) return NotFound(new { success = false, message = "No hay compensaciones pendientes" });
+
+            compensation.IsRedeemed = true;
+            compensation.RedeemedAt = DateTime.Now;
+            await _compensationRepository.UpdateAsync(compensation);
+
+            return Ok(new { success = true, message = "Compensación canjeada correctamente" });
         }
         catch (Exception ex)
         {

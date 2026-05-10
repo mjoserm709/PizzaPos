@@ -18,6 +18,7 @@ public partial class OrderManagementControl : UserControl
     private FlowLayoutPanel flpItems = null!;
     private Label lblDetailAddress = null!;
     private Label lblDetailNotes = null!;
+    private System.Windows.Forms.Timer refreshTimer = null!;
 
     public OrderManagementControl(string token, List<string> roles)
     {
@@ -25,11 +26,21 @@ public partial class OrderManagementControl : UserControl
         _token = token;
         _userRoles = roles;
         SetupDetailsPanel();
+        SetupRefreshTimer();
         
         this.Load += async (s, e) => {
             await LoadOrders();
             SetupSignalR();
         };
+    }
+
+    private void SetupRefreshTimer()
+    {
+        refreshTimer = new System.Windows.Forms.Timer { Interval = 30000 }; // Refrescar cada 30 seg
+        refreshTimer.Tick += (s, e) => {
+            if (this.Visible) PopulateBoard();
+        };
+        refreshTimer.Start();
     }
 
     private void SetupDetailsPanel()
@@ -126,12 +137,26 @@ public partial class OrderManagementControl : UserControl
             BorderStyle = BorderStyle.FixedSingle
         };
 
-        // Alerta de Retraso: Si lleva más de 15 min en Pendiente/Confirmado
-        bool isDelayed = (order.StatusId <= 2) && (DateTime.Now - order.CreatedAt).TotalMinutes > 15;
-        if (isDelayed) {
-            panel.BackColor = Color.FromArgb(255, 235, 238); // Rojo muy suave
+        // Lógica de SLA (Tiempo de vida del pedido)
+        var elapsed = DateTime.Now - order.CreatedAt;
+        double minutes = elapsed.TotalMinutes;
+
+        if (minutes > 45) {
+            panel.BackColor = Color.FromArgb(255, 205, 210); // Alerta Roja (Crítico)
             panel.BorderStyle = BorderStyle.FixedSingle;
+        } else if (minutes > 30) {
+            panel.BackColor = Color.FromArgb(255, 249, 196); // Alerta Amarilla (Advertencia)
         }
+
+        // Reloj de tiempo transcurrido
+        var lblElapsed = new Label {
+            Text = $"⏱ {(int)minutes}m",
+            Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            ForeColor = minutes > 45 ? Color.Red : (minutes > 30 ? Color.DarkGoldenrod : Color.Gray),
+            Location = new Point(panel.Width - 75, 10),
+            AutoSize = true
+        };
+        panel.Controls.Add(lblElapsed);
 
         // Borde de color según estado
         var accentColor = GetStatusColor(order.StatusId);

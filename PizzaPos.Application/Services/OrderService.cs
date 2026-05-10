@@ -11,17 +11,20 @@ public class OrderService : IOrderService
     private readonly IAppConfigRepository _configRepository;
     private readonly IProductRepository _productRepository;
     private readonly IOrderStatusRepository _statusRepository;
+    private readonly ICompensationRepository _compensationRepository;
 
     public OrderService(
         IOrderRepository orderRepository,
         IAppConfigRepository configRepository,
         IProductRepository productRepository,
-        IOrderStatusRepository statusRepository)
+        IOrderStatusRepository statusRepository,
+        ICompensationRepository compensationRepository)
     {
         _orderRepository = orderRepository;
         _configRepository = configRepository;
         _productRepository = productRepository;
         _statusRepository = statusRepository;
+        _compensationRepository = compensationRepository;
     }
 
     public async Task<decimal> GetIvaRateAsync()
@@ -121,6 +124,30 @@ public class OrderService : IOrderService
         order.UpdatedBy = currentUsername;
 
         await _orderRepository.UpdateAsync(order);
+
+        // Lógica de Compensación Automática
+        if (statusCode == "entregado")
+        {
+            var elapsed = DateTime.Now - order.CreatedAt;
+            if (elapsed.TotalMinutes > 60)
+            {
+                // Verificar si ya tiene una pendiente para no duplicar (aunque el requerimiento es por pedido)
+                var existing = await _compensationRepository.GetPendingByCustomerIdAsync(order.CustomerId);
+                if (existing == null)
+                {
+                    await _compensationRepository.AddAsync(new Compensation
+                    {
+                        CustomerId = order.CustomerId,
+                        SourceOrderId = order.Id,
+                        Description = $"Cortesía por retraso en pedido {order.OrderNumber} (+60 min)",
+                        DiscountAmount = 0.20m, // 20% de descuento
+                        IsRedeemed = false,
+                        CreatedAt = DateTime.Now,
+                        CreatedBy = "System"
+                    });
+                }
+            }
+        }
     }
 
     private OrderResponseDto MapToDto(Order o)

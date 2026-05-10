@@ -16,6 +16,7 @@ public partial class OrderCreationControl : UserControl
     private BindingList<CartItem> _cart = new();
     private decimal _ivaRate = 0.15m;
     private CustomerModel? _selectedCustomer;
+    private JsonElement? _pendingCompensation = null;
 
     public OrderCreationControl(string token)
     {
@@ -173,34 +174,60 @@ public partial class OrderCreationControl : UserControl
         }
     }
 
-    private void SelectCustomer()
+    private async void SelectCustomer()
     {
         if (lstCustomerResults.SelectedItem is CustomerSearchItem selected)
         {
-            var customer = selected.Data;
-            _selectedCustomer = customer;
+            _selectedCustomer = selected.Data;
             
-            // Ocultar primero para evitar eventos de cambio
             lstCustomerResults.Visible = false;
             
-            txtSearchCustomer.Text = customer.FullName;
-            lblCustomerInfo.Text = $"Cliente: {customer.FullName} ({customer.Phone})";
-            lblCustomerInfo.ForeColor = System.Drawing.Color.Black;
+            txtSearchCustomer.Text = _selectedCustomer.FullName;
+            lblCustomerInfo.Text = $"👤 {_selectedCustomer.FullName} | 📞 {_selectedCustomer.Phone}";
+            lblCustomerInfo.ForeColor = System.Drawing.Color.FromArgb(46, 125, 50);
             
             cmbAddress.DataSource = null;
-            cmbAddress.DataSource = customer.Addresses;
+            cmbAddress.DataSource = _selectedCustomer.Addresses;
             cmbAddress.DisplayMember = "Street";
+            
+            await CheckCustomerCompensation(_selectedCustomer.Id);
             
             ToastNotification.Success("Cliente seleccionado");
             
-            // Quitar foco para cerrar teclado/lista
             this.ActiveControl = cmbAddress;
         }
     }
 
+    private async Task CheckCustomerCompensation(int customerId)
+    {
+        try
+        {
+            _pendingCompensation = null;
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            var res = await _httpClient.GetAsync($"http://localhost:5267/api/customers/{customerId}/compensation");
+            if (res.IsSuccessStatusCode)
+            {
+                var json = await res.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+                if (root.TryGetProperty("data", out var data) && data.ValueKind != JsonValueKind.Null)
+                {
+                    _pendingCompensation = data;
+                    string desc = data.GetProperty("description").GetString() ?? "Compensación";
+                    decimal discount = data.GetProperty("discountAmount").GetDecimal();
+                    
+                    MessageBox.Show($"🎁 ¡ATENCIÓN! Este cliente tiene una COMPENSACIÓN PENDIENTE:\n\n{desc}\n\nSe aplicará un {discount:P0} de descuento automáticamente.", 
+                        "Beneficio de Cliente", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    UpdateTotals();
+                }
+            }
+        }
+        catch { /* Silencioso */ }
+    }
+
     private async void btnSearchCustomer_Click(object sender, EventArgs e)
     {
-        // El botón ahora es opcional, pero lo dejamos por si quieren forzar la búsqueda
         await PerformCustomerSearch(txtSearchCustomer.Text);
     }
 
@@ -239,9 +266,22 @@ public partial class OrderCreationControl : UserControl
         decimal tax = subtotal * _ivaRate;
         decimal total = subtotal + tax;
 
+        if (_pendingCompensation != null)
+        {
+            decimal discountRate = _pendingCompensation.Value.GetProperty("discountAmount").GetDecimal();
+            decimal discount = total * discountRate;
+            total -= discount;
+            lblTotal.Text = $"TOTAL: {total:C2} (Desc. Aplicado)";
+            lblTotal.ForeColor = System.Drawing.Color.FromArgb(198, 40, 40);
+        }
+        else
+        {
+            lblTotal.Text = $"TOTAL: {total:C2}";
+            lblTotal.ForeColor = System.Drawing.Color.Black;
+        }
+
         lblSubtotal.Text = $"Subtotal: {subtotal:C2}";
         lblTax.Text = $"IVA ({_ivaRate:P0}): {tax:C2}";
-        lblTotal.Text = $"TOTAL: {total:C2}";
     }
 
     private async void btnFinalize_Click(object sender, EventArgs e)
@@ -280,11 +320,18 @@ public partial class OrderCreationControl : UserControl
             
             if (res.IsSuccessStatusCode)
             {
+                if (_pendingCompensation != null)
+                {
+                    await _httpClient.PostAsync($"http://localhost:5267/api/customers/{_selectedCustomer.Id}/redeem-compensation", null);
+                    _pendingCompensation = null;
+                }
+
                 ToastNotification.Success("¡Pedido creado con éxito!");
                 _cart.Clear();
                 _selectedCustomer = null;
                 lblCustomerInfo.Text = "No se ha seleccionado cliente";
                 txtSearchCustomer.Clear();
+                UpdateTotals();
             }
             else
             {
