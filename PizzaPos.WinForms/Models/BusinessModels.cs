@@ -44,3 +44,30 @@ public class ProductSizeModel
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
 }
+
+public class OrderResponseDto
+{
+    public int Id { get; set; }
+    public string OrderNumber { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+    public string CustomerPhone { get; set; } = string.Empty;
+    public string DeliveryAddress { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
+    public string StatusName { get; set; } = string.Empty;
+    public string StatusCode { get; set; } = string.Empty;
+    public int StatusId { get; set; }
+    public decimal Subtotal { get; set; }
+    public decimal TaxAmount { get; set; }
+    public decimal Total { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public List<OrderDetailDto> Details { get; set; } = new();
+}
+
+public class OrderDetailDto
+{
+    public string ProductName { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public decimal Total { get; set; }
+}

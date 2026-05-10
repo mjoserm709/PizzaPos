@@ -20,7 +20,19 @@ public class LoginService : ILoginService
         // En tu esquema, el login se hace por Email
         var user = await _userRepository.GetByEmailAsync(request.Username);
 
-        if (user == null || user.PasswordHash != request.Password || !user.IsActive)
+        bool isValid = false;
+        try
+        {
+            isValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+        }
+        catch
+        {
+            // Si el hash en la DB no es un hash válido de BCrypt (ej. texto plano antiguo),
+            // comparamos directamente. Esto evita bloqueos durante la transición.
+            isValid = user.PasswordHash == request.Password;
+        }
+
+        if (user == null || !user.IsActive || !isValid)
         {
             return null;
         }

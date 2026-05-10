@@ -419,9 +419,11 @@ public partial class OrderCreationControl : UserControl
             var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var res = await _httpClient.PostAsync("http://localhost:5267/api/orders", content);
-            
             if (res.IsSuccessStatusCode)
             {
+                var json = await res.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DynamicResponse<OrderResponseDto>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
                 if (_pendingCompensation != null)
                 {
                     await _httpClient.PostAsync($"http://localhost:5267/api/customers/{_selectedCustomer.Id}/redeem-compensation", null);
@@ -429,6 +431,12 @@ public partial class OrderCreationControl : UserControl
                 }
 
                 ToastNotification.Success("¡Pedido creado con éxito!");
+                
+                if (result?.Data != null)
+                {
+                    ReceiptService.Print(result.Data);
+                }
+
                 _cart.Clear();
                 _selectedCustomer = null;
                 lblCustomerInfo.Text = "No se ha seleccionado cliente";

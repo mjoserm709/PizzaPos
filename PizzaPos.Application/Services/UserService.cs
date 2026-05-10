@@ -35,7 +35,7 @@ public class UserService : IUserService
         {
             FullName = request.FullName,
             Email = request.Username,
-            PasswordHash = request.Password,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
             IdentityNumber = request.IdentityNumber,
             CreatedAt = DateTime.Now,
             CreatedBy = currentUsername,
@@ -77,7 +77,7 @@ public class UserService : IUserService
         user.UpdatedBy = currentUsername;
         
         if (!string.IsNullOrEmpty(request.Password))
-            user.PasswordHash = request.Password;
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
         if (request.RoleNames.Any())
         {

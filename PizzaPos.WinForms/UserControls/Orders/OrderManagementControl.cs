@@ -19,6 +19,7 @@ public partial class OrderManagementControl : UserControl
     private Label lblDetailAddress = null!;
     private Label lblDetailNotes = null!;
     private System.Windows.Forms.Timer refreshTimer = null!;
+    private OrderResponseDto? _selectedOrderDetails;
 
     public OrderManagementControl(string token, List<string> roles)
     {
@@ -72,7 +73,22 @@ public partial class OrderManagementControl : UserControl
         var lblNoteTitle = new Label { Text = "NOTAS:", Font = new Font("Segoe UI", 9F, FontStyle.Bold), Dock = DockStyle.Top, Height = 25, Margin = new Padding(0, 20, 0, 0) };
         lblDetailNotes = new Label { Dock = DockStyle.Top, AutoSize = true, Font = new Font("Segoe UI", 9F), ForeColor = Color.DarkRed };
 
-        pnlDetails.Controls.AddRange(new Control[] { lblDetailNotes, lblNoteTitle, lblDetailAddress, lblAddrTitle, flpItems, lblProdTitle, lblDetailTitle });
+        var btnPrintDetails = new Button {
+            Text = "🖨 Imprimir Recibo",
+            Dock = DockStyle.Top,
+            Height = 35,
+            BackColor = Color.FromArgb(33, 150, 243),
+            ForeColor = Color.White,
+            FlatStyle = FlatStyle.Flat,
+            Margin = new Padding(0, 20, 0, 0),
+            Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+        };
+        btnPrintDetails.FlatAppearance.BorderSize = 0;
+        btnPrintDetails.Click += (s, e) => {
+            if (_selectedOrderDetails != null) ReceiptService.Print(_selectedOrderDetails);
+        };
+
+        pnlDetails.Controls.AddRange(new Control[] { btnPrintDetails, lblDetailNotes, lblNoteTitle, lblDetailAddress, lblAddrTitle, flpItems, lblProdTitle, lblDetailTitle });
         this.pnlBoard.Controls.Add(pnlDetails, 4, 0);
         this.pnlBoard.SetRowSpan(pnlDetails, 2);
     }
@@ -232,6 +248,7 @@ public partial class OrderManagementControl : UserControl
 
     private void ShowOrderDetails(OrderResponseDto order)
     {
+        _selectedOrderDetails = order;
         pnlDetails.Visible = true;
         lblDetailTitle.Text = $"Pedido {order.OrderNumber}";
         
@@ -331,27 +348,3 @@ public partial class OrderManagementControl : UserControl
     }
 }
 
-public class OrderResponseDto
-{
-    public int Id { get; set; }
-    public string OrderNumber { get; set; } = string.Empty;
-    public string CustomerName { get; set; } = string.Empty;
-    public string CustomerPhone { get; set; } = string.Empty;
-    public string DeliveryAddress { get; set; } = string.Empty;
-    public string Notes { get; set; } = string.Empty;
-    public string StatusName { get; set; } = string.Empty;
-    public string StatusCode { get; set; } = string.Empty;
-    public int StatusId { get; set; }
-    public decimal Total { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public List<OrderDetailDto> Details { get; set; } = new();
-}
-
-public class OrderDetailDto
-{
-    public string ProductName { get; set; } = string.Empty;
-    public int Quantity { get; set; }
-    public decimal UnitPrice { get; set; }
-    public decimal Total { get; set; }
-}
