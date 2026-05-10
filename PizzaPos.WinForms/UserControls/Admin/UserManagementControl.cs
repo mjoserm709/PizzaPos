@@ -10,24 +10,34 @@ namespace PizzaPos.WinForms.UserControls.Admin;
 public partial class UserManagementControl : UserControl
 {
     private readonly string _token;
+    private readonly List<string> _permissions;
     private static readonly HttpClient _httpClient = new HttpClient();
     private int? _selectedUserId;
     private List<UserResponse> _usersList = new();
     private BindingSource _bindingSource = new BindingSource();
 
-    public UserManagementControl(string token)
+    public UserManagementControl(string token, List<string> permissions)
     {
         InitializeComponent();
         _token = token;
+        _permissions = permissions;
         txtIdentity.TextChanged += txtIdentity_TextChanged;
         
         dgvUsers.AutoGenerateColumns = true;
         dgvUsers.DataSource = _bindingSource;
 
         this.Load += async (s, e) => {
+            ApplyPermissions();
             await LoadRolesAndPermissions();
             await LoadUsers();
         };
+    }
+
+    private void ApplyPermissions()
+    {
+        btnNew.Visible = _permissions.Contains("users.create");
+        btnEdit.Visible = _permissions.Contains("users.edit");
+        btnToggleStatus.Visible = _permissions.Contains("users.delete");
     }
 
     private async Task LoadRolesAndPermissions()
@@ -36,31 +46,38 @@ public partial class UserManagementControl : UserControl
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             
-            var response = await _httpClient.GetAsync("http://localhost:5267/api/users/roles");
-            if (response.IsSuccessStatusCode)
+            // Cargar Roles
+            var resRoles = await _httpClient.GetAsync("http://localhost:5267/api/users/roles");
+            if (resRoles.IsSuccessStatusCode)
             {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<List<string>>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (dynamicResult != null && dynamicResult.Success && dynamicResult.Data != null)
+                var json = await resRoles.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DynamicResponse<List<string>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (result != null && result.Success && result.Data != null)
                 {
                     clbRoles.Items.Clear();
-                    foreach (var role in dynamicResult.Data) clbRoles.Items.Add(role);
+                    foreach (var role in result.Data) clbRoles.Items.Add(role);
                 }
             }
 
-            response = await _httpClient.GetAsync("http://localhost:5267/api/users/permissions");
-            if (response.IsSuccessStatusCode)
+            // Cargar Permisos
+            var resPerms = await _httpClient.GetAsync("http://localhost:5267/api/users/permissions");
+            if (resPerms.IsSuccessStatusCode)
             {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var dynamicResult = JsonSerializer.Deserialize<DynamicResponse<List<string>>>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (dynamicResult != null && dynamicResult.Success && dynamicResult.Data != null)
+                var json = await resPerms.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<DynamicResponse<List<string>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (result != null && result.Success && result.Data != null)
                 {
                     clbPermissions.Items.Clear();
-                    foreach (var perm in dynamicResult.Data) clbPermissions.Items.Add(perm);
+                    foreach (var perm in result.Data) clbPermissions.Items.Add(perm);
                 }
             }
+            
+            if (!resRoles.IsSuccessStatusCode || !resPerms.IsSuccessStatusCode)
+            {
+                ToastNotification.Error("No se pudieron cargar los catálogos. Verifique sus permisos de administrador.");
+            }
         }
-        catch (Exception ex) { ToastNotification.Error($"Error: {ex.Message}"); }
+        catch (Exception ex) { ToastNotification.Error($"Error cargando catálogos: {ex.Message}"); }
     }
 
     private async Task LoadUsers()
@@ -278,7 +295,7 @@ public partial class UserManagementControl : UserControl
         catch (Exception ex) { ToastNotification.Error($"Error: {ex.Message}"); }
     }
 
-    private void txtIdentity_TextChanged(object sender, EventArgs e)
+    private void txtIdentity_TextChanged(object? sender, EventArgs e)
     {
         string text = txtIdentity.Text.Replace("-", "");
         if (text.Length > 13) text = text.Substring(0, 13);

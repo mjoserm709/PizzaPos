@@ -7,19 +7,21 @@ public partial class MainForm : Form
 {
     private readonly string _userDisplayName;
     private readonly List<string> _roles;
+    private readonly List<string> _permissions;
     private readonly string _token;
 
     private UserControl? _currentControl;
-    private HeaderControl _header;
-    private SidebarControl _sidebar;
+    private HeaderControl? _header;
+    private SidebarControl? _sidebar;
 
     public bool IsLoggingOut { get; private set; } = false;
 
-    public MainForm(string userDisplayName, List<string> roles, string token)
+    public MainForm(string userDisplayName, List<string> roles, List<string> permissions, string token)
     {
         InitializeComponent();
         _userDisplayName = userDisplayName;
         _roles = roles;
+        _permissions = permissions;
         _token = token;
         
         SetupLayout();
@@ -27,7 +29,7 @@ public partial class MainForm : Form
 
     private void SetupLayout()
     {
-        bool isAdmin = _roles.Contains("Admin");
+        bool isAdmin = _roles.Any(r => r.Equals("admin", StringComparison.OrdinalIgnoreCase));
 
         // Header
         _header = new HeaderControl(_userDisplayName, _roles);
@@ -44,8 +46,8 @@ public partial class MainForm : Form
         _sidebar.Width = 200;
         
         // Eventos del Sidebar
-        _sidebar.ManageUsersClick += (s, e) => LoadControl(new UserManagementControl(_token));
-        _sidebar.SecurityClick += (s, e) => LoadControl(new SecurityManagementControl(_token));
+        _sidebar.ManageUsersClick += (s, e) => LoadControl(new UserManagementControl(_token, _permissions));
+        _sidebar.SecurityClick += (s, e) => LoadControl(new SecurityManagementControl(_token, _permissions));
         
         this.Controls.Add(_sidebar);
 

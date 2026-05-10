@@ -96,5 +96,8 @@ namespace PizzaPos.WinForms.Utils
 
         public static void Info(string message) 
             => new ToastNotification("Información", message, Color.FromArgb(0, 123, 255)).Show();
+
+        public static void Warning(string message)
+            => new ToastNotification("Advertencia", message, Color.FromArgb(255, 193, 7)).Show();
     }
 }

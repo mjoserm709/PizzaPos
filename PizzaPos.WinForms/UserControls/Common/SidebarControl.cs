@@ -2,12 +2,12 @@ namespace PizzaPos.WinForms.UserControls.Common;
 
 public partial class SidebarControl : UserControl
 {
-    public event EventHandler NewOrderClick;
-    public event EventHandler ActiveOrdersClick;
-    public event EventHandler HistoryClick;
-    public event EventHandler SettingsClick;
-    public event EventHandler ManageUsersClick;
-    public event EventHandler SecurityClick;
+    public event EventHandler? NewOrderClick;
+    public event EventHandler? ActiveOrdersClick;
+    public event EventHandler? HistoryClick;
+    public event EventHandler? SettingsClick;
+    public event EventHandler? ManageUsersClick;
+    public event EventHandler? SecurityClick;
 
     public SidebarControl(bool isAdmin)
     {

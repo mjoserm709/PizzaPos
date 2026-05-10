@@ -4,7 +4,7 @@ namespace PizzaPos.WinForms.UserControls.Common;
 
 public partial class HeaderControl : UserControl
 {
-    public event EventHandler LogoutClick;
+    public event EventHandler? LogoutClick;
 
     public HeaderControl(string username, List<string> roles)
     {
