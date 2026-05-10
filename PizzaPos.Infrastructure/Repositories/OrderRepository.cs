@@ -65,13 +65,21 @@ public class OrderRepository : IOrderRepository
         _dbSet = context.Orders;
     }
 
-    public async Task<Order?> GetByIdAsync(int id) => await _dbSet.Include(o => o.Details).FirstOrDefaultAsync(o => o.Id == id);
+    public async Task<Order?> GetByIdAsync(int id) => 
+        await _dbSet.Include(o => o.Customer)
+                    .Include(o => o.Status)
+                    .Include(o => o.Address)
+                    .Include(o => o.Details)
+                        .ThenInclude(d => d.Product)
+                    .FirstOrDefaultAsync(o => o.Id == id);
 
     public async Task<IEnumerable<Order>> GetByStatusAsync(string statusCode)
     {
         return await _dbSet.Include(o => o.Customer)
                            .Include(o => o.Status)
+                           .Include(o => o.Address)
                            .Include(o => o.Details)
+                                .ThenInclude(d => d.Product)
                            .Where(o => o.Status.Code == statusCode)
                            .OrderByDescending(o => o.CreatedAt)
                            .ToListAsync();
@@ -82,7 +90,9 @@ public class OrderRepository : IOrderRepository
         var activeStatuses = new[] { "pendiente", "confirmado", "en_preparacion", "listo", "en_camino" };
         return await _dbSet.Include(o => o.Customer)
                            .Include(o => o.Status)
+                           .Include(o => o.Address)
                            .Include(o => o.Details)
+                                .ThenInclude(d => d.Product)
                            .Where(o => activeStatuses.Contains(o.Status.Code))
                            .OrderByDescending(o => o.CreatedAt)
                            .ToListAsync();
@@ -92,7 +102,9 @@ public class OrderRepository : IOrderRepository
     {
         var query = _dbSet.Include(o => o.Customer)
                           .Include(o => o.Status)
+                          .Include(o => o.Address)
                           .Include(o => o.Details)
+                                .ThenInclude(d => d.Product)
                           .AsQueryable();
 
         if (startDate.HasValue)

@@ -13,17 +13,57 @@ public partial class OrderManagementControl : UserControl
     private readonly List<string> _userRoles;
     private static readonly HttpClient _httpClient = new HttpClient();
     private List<OrderResponseDto> _orders = new();
+    private Panel pnlDetails = null!;
+    private Label lblDetailTitle = null!;
+    private FlowLayoutPanel flpItems = null!;
+    private Label lblDetailAddress = null!;
+    private Label lblDetailNotes = null!;
 
     public OrderManagementControl(string token, List<string> roles)
     {
         InitializeComponent();
         _token = token;
         _userRoles = roles;
+        SetupDetailsPanel();
         
         this.Load += async (s, e) => {
             await LoadOrders();
             SetupSignalR();
         };
+    }
+
+    private void SetupDetailsPanel()
+    {
+        // Ajustar el TableLayoutPanel principal para tener una columna extra para detalles
+        this.pnlBoard.ColumnCount = 5;
+        this.pnlBoard.ColumnStyles.Clear();
+        this.pnlBoard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+        this.pnlBoard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+        this.pnlBoard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+        this.pnlBoard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+        this.pnlBoard.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300F)); // Columna de detalles
+
+        pnlDetails = new Panel {
+            Dock = DockStyle.Fill,
+            BackColor = Color.FromArgb(245, 247, 251),
+            Padding = new Padding(15),
+            Visible = false
+        };
+
+        lblDetailTitle = new Label { Text = "Detalles del Pedido", Font = new Font("Segoe UI", 12F, FontStyle.Bold), Dock = DockStyle.Top, Height = 30 };
+        
+        var lblProdTitle = new Label { Text = "PRODUCTOS:", Font = new Font("Segoe UI", 9F, FontStyle.Bold), Dock = DockStyle.Top, Height = 25, Margin = new Padding(0, 10, 0, 0) };
+        flpItems = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.TopDown, WrapContents = false };
+        
+        var lblAddrTitle = new Label { Text = "ENTREGA / CONTACTO:", Font = new Font("Segoe UI", 9F, FontStyle.Bold), Dock = DockStyle.Top, Height = 25, Margin = new Padding(0, 20, 0, 0) };
+        lblDetailAddress = new Label { Dock = DockStyle.Top, AutoSize = true, Font = new Font("Segoe UI", 9F) };
+        
+        var lblNoteTitle = new Label { Text = "NOTAS:", Font = new Font("Segoe UI", 9F, FontStyle.Bold), Dock = DockStyle.Top, Height = 25, Margin = new Padding(0, 20, 0, 0) };
+        lblDetailNotes = new Label { Dock = DockStyle.Top, AutoSize = true, Font = new Font("Segoe UI", 9F), ForeColor = Color.DarkRed };
+
+        pnlDetails.Controls.AddRange(new Control[] { lblDetailNotes, lblNoteTitle, lblDetailAddress, lblAddrTitle, flpItems, lblProdTitle, lblDetailTitle });
+        this.pnlBoard.Controls.Add(pnlDetails, 4, 0);
+        this.pnlBoard.SetRowSpan(pnlDetails, 2);
     }
 
     private void SetupSignalR()
@@ -147,7 +187,35 @@ public partial class OrderManagementControl : UserControl
         panel.Controls.Add(lblCustomer);
         panel.Controls.Add(lblOrder);
 
+        // Hacer toda la tarjeta clickeable para ver detalles
+        panel.Cursor = Cursors.Hand;
+        panel.Click += (s, e) => ShowOrderDetails(order);
+        foreach (Control c in panel.Controls) {
+            if (!(c is Button)) c.Click += (s, e) => ShowOrderDetails(order);
+        }
+
         return panel;
+    }
+
+    private void ShowOrderDetails(OrderResponseDto order)
+    {
+        pnlDetails.Visible = true;
+        lblDetailTitle.Text = $"Pedido {order.OrderNumber}";
+        
+        flpItems.Controls.Clear();
+        foreach (var item in order.Details)
+        {
+            var lblItem = new Label { 
+                Text = $"• {item.Quantity}x {item.ProductName}", 
+                AutoSize = true, 
+                Font = new Font("Segoe UI", 10F),
+                Margin = new Padding(0, 3, 0, 3)
+            };
+            flpItems.Controls.Add(lblItem);
+        }
+
+        lblDetailAddress.Text = $"📍 {order.DeliveryAddress}\n📞 {order.CustomerPhone}";
+        lblDetailNotes.Text = string.IsNullOrEmpty(order.Notes) ? "Sin notas" : order.Notes;
     }
 
     private Color GetStatusColor(int statusId) => statusId switch {
@@ -235,9 +303,21 @@ public class OrderResponseDto
     public int Id { get; set; }
     public string OrderNumber { get; set; } = string.Empty;
     public string CustomerName { get; set; } = string.Empty;
+    public string CustomerPhone { get; set; } = string.Empty;
+    public string DeliveryAddress { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
     public string StatusName { get; set; } = string.Empty;
     public string StatusCode { get; set; } = string.Empty;
     public int StatusId { get; set; }
     public decimal Total { get; set; }
     public DateTime CreatedAt { get; set; }
+    public List<OrderDetailDto> Details { get; set; } = new();
+}
+
+public class OrderDetailDto
+{
+    public string ProductName { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
+    public decimal Total { get; set; }
 }

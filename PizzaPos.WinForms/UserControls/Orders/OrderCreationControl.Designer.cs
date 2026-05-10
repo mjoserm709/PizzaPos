@@ -39,6 +39,8 @@ partial class OrderCreationControl
         this.lblTitleCart = new System.Windows.Forms.Label();
         this.cmbPaymentMethod = new System.Windows.Forms.ComboBox();
         this.lblPayment = new System.Windows.Forms.Label();
+        this.txtNotes = new System.Windows.Forms.TextBox();
+        this.lblNotesTitle = new System.Windows.Forms.Label();
 
         this.pnlCustomer.SuspendLayout();
         this.pnlProducts.SuspendLayout();
@@ -134,6 +136,8 @@ partial class OrderCreationControl
 
         // --- Panel Carrito ---
         this.pnlCart.BackColor = System.Drawing.Color.FromArgb(232, 245, 233);
+        this.pnlCart.Controls.Add(this.lblNotesTitle);
+        this.pnlCart.Controls.Add(this.txtNotes);
         this.pnlCart.Controls.Add(this.lblPayment);
         this.pnlCart.Controls.Add(this.cmbPaymentMethod);
         this.pnlCart.Controls.Add(this.lblTitleCart);
@@ -176,12 +180,17 @@ partial class OrderCreationControl
         this.lblTax.Size = new System.Drawing.Size(180, 25);
         this.lblTax.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
-        this.lblTotal.Text = "TOTAL: $0.00";
-        this.lblTotal.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-        this.lblTotal.ForeColor = System.Drawing.Color.FromArgb(46, 125, 50);
-        this.lblTotal.Location = new System.Drawing.Point(250, 310);
-        this.lblTotal.Size = new System.Drawing.Size(210, 35);
         this.lblTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+
+        // txtNotes
+        this.lblNotesTitle.Text = "Notas del Pedido:";
+        this.lblNotesTitle.Location = new Point(10, 290);
+        this.lblNotesTitle.AutoSize = true;
+
+        this.txtNotes.Location = new Point(10, 310);
+        this.txtNotes.Size = new Size(220, 35);
+        this.txtNotes.Multiline = true;
+        this.txtNotes.PlaceholderText = "Ej: Sin cebolla...";
 
         this.btnFinalize.BackColor = System.Drawing.Color.FromArgb(46, 125, 50);
         this.btnFinalize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -233,6 +242,8 @@ partial class OrderCreationControl
     private System.Windows.Forms.Label lblTitleCart;
     private System.Windows.Forms.ComboBox cmbPaymentMethod;
     private System.Windows.Forms.Label lblPayment;
+    private System.Windows.Forms.TextBox txtNotes;
+    private System.Windows.Forms.Label lblNotesTitle;
     private System.Windows.Forms.ListBox lstCustomerResults;
     private System.Windows.Forms.Timer searchTimer;
 }

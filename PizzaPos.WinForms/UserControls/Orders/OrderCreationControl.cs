@@ -262,14 +262,14 @@ public partial class OrderCreationControl : UserControl
         {
             CustomerId = _selectedCustomer.Id,
             AddressId = (cmbAddress.SelectedItem as AddressModel)?.Id,
-            PaymentMethodId = cmbPaymentMethod.SelectedIndex + 1,
+            PaymentMethodId = (cmbPaymentMethod.SelectedItem as dynamic).Id,
             Items = _cart.Select(i => new
             {
                 ProductId = i.ProductId,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice
             }).ToList(),
-            Notes = "Pedido desde WinForms"
+            Notes = txtNotes.Text
         };
 
         try
