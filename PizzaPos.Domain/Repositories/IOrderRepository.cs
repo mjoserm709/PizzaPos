@@ -16,6 +16,7 @@ public interface IOrderRepository
 {
     Task<Order?> GetByIdAsync(int id);
     Task<IEnumerable<Order>> GetByStatusAsync(string statusCode);
+    Task<IEnumerable<Order>> GetActiveOrdersAsync();
     Task<string> GetNextOrderNumberAsync();
     Task AddAsync(Order order);
     Task UpdateAsync(Order order);

@@ -15,6 +15,7 @@ namespace PizzaPos.WinForms.Utils
 
         public ToastNotification(string title, string message, Color accentColor, int duration = 4000)
         {
+            this.DoubleBuffered = true;
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.Manual;
             this.BackColor = Color.White;
@@ -26,7 +27,7 @@ namespace PizzaPos.WinForms.Utils
             Panel pnlAccent = new Panel { BackColor = accentColor, Dock = DockStyle.Left, Width = 6 };
             this.Controls.Add(pnlAccent);
 
-            _pnlProgress = new Panel { BackColor = accentColor, Dock = DockStyle.Bottom, Height = 3, Width = 0 };
+            _pnlProgress = new Panel { BackColor = accentColor, Dock = DockStyle.Bottom, Height = 4, Width = 0 };
             this.Controls.Add(_pnlProgress);
 
             Label lblTitle = new Label
@@ -46,17 +47,13 @@ namespace PizzaPos.WinForms.Utils
                 Font = new Font("Segoe UI", 9.5f),
                 Location = new Point(15, 35),
                 Width = 310,
-                AutoSize = false
+                AutoSize = false,
+                Height = 40
             };
-            
-            using (Graphics g = this.CreateGraphics())
-            {
-                SizeF size = g.MeasureString(message, lblMessage.Font, 310);
-                lblMessage.Height = (int)size.Height + 5;
-                this.Width = 350;
-                this.Height = Math.Max(80, lblMessage.Bottom + 15);
-            }
             this.Controls.Add(lblMessage);
+
+            this.Width = 350;
+            this.Height = 90;
 
             _timer = new System.Windows.Forms.Timer { Interval = 50 };
             _timer.Tick += (s, e) => {
@@ -83,21 +80,30 @@ namespace PizzaPos.WinForms.Utils
         {
             Rectangle workingArea = Screen.PrimaryScreen?.WorkingArea ?? Screen.GetWorkingArea(this);
             _targetY = 20;
-            this.Location = new Point(workingArea.Width - this.Width - 20, _targetY + 30);
+            this.Location = new Point(workingArea.Width - this.Width - 20, _targetY + 40);
             _animationTimer.Start();
             _timer.Start();
         }
 
-        public static void Success(string message) 
-            => new ToastNotification("¡Éxito!", message, Color.FromArgb(40, 167, 69)).Show();
+        private static void ShowSafe(string title, string message, Color color)
+        {
+            if (Application.OpenForms.Count > 0)
+            {
+                var mainForm = Application.OpenForms[0];
+                if (mainForm.InvokeRequired)
+                {
+                    mainForm.BeginInvoke(new Action(() => new ToastNotification(title, message, color).Show()));
+                }
+                else
+                {
+                    new ToastNotification(title, message, color).Show();
+                }
+            }
+        }
 
-        public static void Error(string message) 
-            => new ToastNotification("Error", message, Color.FromArgb(220, 53, 69)).Show();
-
-        public static void Info(string message) 
-            => new ToastNotification("Información", message, Color.FromArgb(0, 123, 255)).Show();
-
-        public static void Warning(string message)
-            => new ToastNotification("Advertencia", message, Color.FromArgb(255, 193, 7)).Show();
+        public static void Success(string message) => ShowSafe("¡Éxito!", message, Color.FromArgb(40, 167, 69));
+        public static void Error(string message) => ShowSafe("Error", message, Color.FromArgb(220, 53, 69));
+        public static void Info(string message) => ShowSafe("Información", message, Color.FromArgb(0, 123, 255));
+        public static void Warning(string message) => ShowSafe("Advertencia", message, Color.FromArgb(255, 193, 7));
     }
 }

@@ -77,6 +77,17 @@ public class OrderRepository : IOrderRepository
                            .ToListAsync();
     }
 
+    public async Task<IEnumerable<Order>> GetActiveOrdersAsync()
+    {
+        var activeStatuses = new[] { "pendiente", "confirmado", "en_preparacion", "listo", "en_camino" };
+        return await _dbSet.Include(o => o.Customer)
+                           .Include(o => o.Status)
+                           .Include(o => o.Details)
+                           .Where(o => activeStatuses.Contains(o.Status.Code))
+                           .OrderByDescending(o => o.CreatedAt)
+                           .ToListAsync();
+    }
+
     public async Task<string> GetNextOrderNumberAsync()
     {
         var count = await _dbSet.CountAsync();

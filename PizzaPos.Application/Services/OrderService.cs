@@ -90,6 +90,12 @@ public class OrderService : IOrderService
         return orders.Select(MapToDto);
     }
 
+    public async Task<IEnumerable<OrderResponseDto>> GetActiveOrdersAsync()
+    {
+        var orders = await _orderRepository.GetActiveOrdersAsync();
+        return orders.Select(MapToDto);
+    }
+
     public async Task<OrderResponseDto?> GetOrderByIdAsync(int id)
     {
         var order = await _orderRepository.GetByIdAsync(id);
@@ -118,6 +124,8 @@ public class OrderService : IOrderService
             o.OrderNumber,
             o.Customer?.FullName ?? "Cliente",
             o.Status?.Name ?? "Pendiente",
+            o.Status?.Code ?? "pendiente",
+            o.StatusId,
             o.Subtotal,
             o.TaxAmount,
             o.Total,

@@ -6,6 +6,7 @@ public interface IOrderService
 {
     Task<OrderResponseDto> CreateOrderAsync(CreateOrderRequest request, string currentUsername);
     Task<IEnumerable<OrderResponseDto>> GetOrdersByStatusAsync(string statusCode);
+    Task<IEnumerable<OrderResponseDto>> GetActiveOrdersAsync();
     Task<OrderResponseDto?> GetOrderByIdAsync(int id);
     Task<decimal> GetIvaRateAsync();
     Task UpdateOrderStatusAsync(int orderId, string statusCode, string currentUsername);
@@ -27,6 +28,8 @@ public record OrderResponseDto(
     string OrderNumber,
     string CustomerName,
     string StatusName,
+    string StatusCode,
+    int StatusId,
     decimal Subtotal,
     decimal TaxAmount,
     decimal Total,

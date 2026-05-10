@@ -29,6 +29,13 @@ public class OrdersController : ControllerBase
         return Ok(new { success = true, rate });
     }
 
+    [HttpGet("active")]
+    public async Task<IActionResult> GetActive()
+    {
+        var results = await _orderService.GetActiveOrdersAsync();
+        return Ok(new { success = true, data = results });
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
     {
