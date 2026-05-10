@@ -28,12 +28,14 @@ public class PizzaPosDbContext : DbContext
     public DbSet<Order> Orders { get; set; } = null!;
     public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
     public DbSet<Delivery> Deliveries { get; set; } = null!;
+    public DbSet<AppConfig> Configs { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         // Mapeo de Tablas
+        modelBuilder.Entity<AppConfig>().ToTable("configuracion");
         modelBuilder.Entity<Role>().ToTable("roles");
         modelBuilder.Entity<Permission>().ToTable("permisos");
         modelBuilder.Entity<User>().ToTable("usuarios");
@@ -150,6 +152,10 @@ public class PizzaPosDbContext : DbContext
         modelBuilder.Entity<Product>().HasData(
             new Product { Id = 1, CategoryId = 1, SizeId = 2, Name = "Pizza Pepperoni Mediana", Price = 450.00m, CreatedAt = now, CreatedBy = "System" },
             new Product { Id = 2, CategoryId = 1, SizeId = 3, Name = "Pizza Familiar Mixta", Price = 750.00m, CreatedAt = now, CreatedBy = "System" }
+        );
+        // 10. Configuración del Sistema
+        modelBuilder.Entity<AppConfig>().HasData(
+            new AppConfig { Id = 1, Key = "IVA_PERCENTAGE", Value = "13", Description = "Porcentaje de IVA aplicado a las ventas", CreatedAt = now, CreatedBy = "System" }
         );
     }
 }

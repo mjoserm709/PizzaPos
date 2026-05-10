@@ -1,5 +1,6 @@
 using PizzaPos.WinForms.UserControls.Common;
 using PizzaPos.WinForms.UserControls.Admin;
+using PizzaPos.WinForms.UserControls.Orders;
 
 namespace PizzaPos.WinForms.Forms;
 
@@ -46,6 +47,7 @@ public partial class MainForm : Form
         _sidebar.Width = 200;
         
         // Eventos del Sidebar
+        _sidebar.NewOrderClick += (s, e) => LoadControl(new OrderCreationControl(_token));
         _sidebar.ManageUsersClick += (s, e) => LoadControl(new UserManagementControl(_token, _permissions));
         _sidebar.SecurityClick += (s, e) => LoadControl(new SecurityManagementControl(_token, _permissions));
         

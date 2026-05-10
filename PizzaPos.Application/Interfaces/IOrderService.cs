@@ -1,0 +1,36 @@
+using PizzaPos.Application.DTOs;
+
+namespace PizzaPos.Application.Interfaces;
+
+public interface IOrderService
+{
+    Task<OrderResponseDto> CreateOrderAsync(CreateOrderRequest request, string currentUsername);
+    Task<IEnumerable<OrderResponseDto>> GetOrdersByStatusAsync(string statusCode);
+    Task<OrderResponseDto?> GetOrderByIdAsync(int id);
+    Task<decimal> GetIvaRateAsync();
+}
+
+// DTOs Necesarios
+public record CreateOrderRequest(
+    int CustomerId,
+    int? AddressId,
+    int PaymentMethodId,
+    List<OrderItemRequest> Items,
+    string? Notes
+);
+
+public record OrderItemRequest(int ProductId, int Quantity, decimal UnitPrice);
+
+public record OrderResponseDto(
+    int Id,
+    string OrderNumber,
+    string CustomerName,
+    string StatusName,
+    decimal Subtotal,
+    decimal TaxAmount,
+    decimal Total,
+    DateTime CreatedAt,
+    List<OrderDetailDto> Details
+);
+
+public record OrderDetailDto(string ProductName, int Quantity, decimal UnitPrice, decimal Total);
