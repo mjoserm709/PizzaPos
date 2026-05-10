@@ -188,8 +188,8 @@ public partial class OrderHistoryControl : UserControl
                 var result = JsonSerializer.Deserialize<DynamicResponse<List<OrderResponseDto>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 _orders = result?.Data ?? new();
                 
-                // Actualizar Stats
-                decimal total = _orders.Sum(o => o.Total);
+                // Actualizar Stats - SOLO pedidos ENTREGADOS cuentan como ganancia
+                decimal total = _orders.Where(o => o.StatusCode == "entregado").Sum(o => o.Total);
                 int count = _orders.Count;
                 int cancelled = _orders.Count(o => o.StatusCode == "cancelado");
 

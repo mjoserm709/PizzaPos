@@ -116,7 +116,7 @@ public partial class OrderManagementControl : UserControl
         var btnNext = new Button {
             Text = GetNextActionText(order.StatusId),
             Location = new Point(15, 90),
-            Size = new Size(panel.Width - 30, 30),
+            Size = new Size(panel.Width - 120, 30),
             BackColor = Color.FromArgb(46, 125, 50),
             ForeColor = Color.White,
             FlatStyle = FlatStyle.Flat,
@@ -125,6 +125,22 @@ public partial class OrderManagementControl : UserControl
         if (!btnNext.Enabled) btnNext.BackColor = Color.Gray;
         btnNext.FlatAppearance.BorderSize = 0;
         btnNext.Click += async (s, e) => await AdvanceOrder(order);
+
+        // Botón Cancelar (Solo en etapas iniciales)
+        if (order.StatusId <= 2)
+        {
+            var btnCancel = new Button {
+                Text = "✖",
+                Location = new Point(panel.Width - 100, 90),
+                Size = new Size(35, 30),
+                BackColor = Color.FromArgb(198, 40, 40),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Click += async (s, e) => await CancelOrder(order);
+            panel.Controls.Add(btnCancel);
+        }
 
         panel.Controls.Add(btnNext);
         panel.Controls.Add(lblTotal);
@@ -188,6 +204,25 @@ public partial class OrderManagementControl : UserControl
             if (res.IsSuccessStatusCode)
             {
                 ToastNotification.Success("Estado actualizado");
+                await LoadOrders();
+            }
+        }
+        catch (Exception ex) { ToastNotification.Error("Error: " + ex.Message); }
+    }
+
+    private async Task CancelOrder(OrderResponseDto order)
+    {
+        if (MessageBox.Show($"¿Está seguro que desea cancelar la orden {order.OrderNumber}?", "Confirmar Cancelación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+            return;
+
+        try
+        {
+            var content = new StringContent(JsonSerializer.Serialize("cancelado"), Encoding.UTF8, "application/json");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            var res = await _httpClient.PutAsync($"http://localhost:5267/api/orders/{order.Id}/status", content);
+            if (res.IsSuccessStatusCode)
+            {
+                ToastNotification.Warning("Orden Cancelada");
                 await LoadOrders();
             }
         }
