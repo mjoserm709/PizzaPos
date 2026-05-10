@@ -344,6 +344,7 @@ public class OrderResponseDto
     public int StatusId { get; set; }
     public decimal Total { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
     public List<OrderDetailDto> Details { get; set; } = new();
 }
 

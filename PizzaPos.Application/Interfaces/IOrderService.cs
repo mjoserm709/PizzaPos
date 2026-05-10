@@ -38,6 +38,7 @@ public record OrderResponseDto(
     decimal TaxAmount,
     decimal Total,
     DateTime CreatedAt,
+    DateTime UpdatedAt,
     List<OrderDetailDto> Details
 );
 

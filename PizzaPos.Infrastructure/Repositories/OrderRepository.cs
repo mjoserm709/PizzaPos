@@ -108,12 +108,12 @@ public class OrderRepository : IOrderRepository
                           .AsQueryable();
 
         if (startDate.HasValue)
-            query = query.Where(o => o.CreatedAt >= startDate.Value);
+            query = query.Where(o => (o.UpdatedAt ?? o.CreatedAt) >= startDate.Value);
 
         if (endDate.HasValue)
         {
             var endOfDay = endDate.Value.Date.AddDays(1);
-            query = query.Where(o => o.CreatedAt < endOfDay);
+            query = query.Where(o => (o.UpdatedAt ?? o.CreatedAt) < endOfDay);
         }
 
         if (!string.IsNullOrEmpty(searchTerm))

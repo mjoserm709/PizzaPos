@@ -166,6 +166,7 @@ public class OrderService : IOrderService
             o.TaxAmount,
             o.Total,
             o.CreatedAt,
+            o.UpdatedAt ?? o.CreatedAt,
             o.Details.Select(d => new OrderDetailDto(
                 d.Product?.Name ?? "Producto",
                 d.Quantity,

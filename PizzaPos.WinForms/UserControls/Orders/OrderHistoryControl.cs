@@ -21,6 +21,9 @@ public partial class OrderHistoryControl : UserControl
     private Label lblStatTotal;
     private Label lblStatCount;
     private Label lblStatCancelled;
+    private Label lblStatPending;
+    private Label lblStatKitchen;
+    private Label lblStatDelivery;
 
     public OrderHistoryControl(string token)
     {
@@ -41,7 +44,8 @@ public partial class OrderHistoryControl : UserControl
             Padding = new Padding(25)
         };
         mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Título
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 120)); // Stats y Filtros
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100)); // Cards
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Filtros
         mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); // Grid
 
         // 1. TÍTULO
@@ -54,7 +58,7 @@ public partial class OrderHistoryControl : UserControl
         };
         mainLayout.Controls.Add(lblTitle, 0, 0);
 
-        // 2. PANEL SUPERIOR (Stats + Filtros)
+        // 2. PANEL DE CARDS (Tarjetas de estado)
         var topPanel = new FlowLayoutPanel { 
             Dock = DockStyle.Fill, 
             FlowDirection = FlowDirection.LeftToRight,
@@ -62,45 +66,51 @@ public partial class OrderHistoryControl : UserControl
         };
 
         // Cards de Stats
-        topPanel.Controls.Add(CreateStatCard("Ventas Totales", "$0.00", Color.FromArgb(46, 125, 50), out lblStatTotal));
-        topPanel.Controls.Add(CreateStatCard("Pedidos", "0", Color.FromArgb(25, 118, 210), out lblStatCount));
-        topPanel.Controls.Add(CreateStatCard("Cancelados", "0", Color.FromArgb(198, 40, 40), out lblStatCancelled));
+        topPanel.Controls.Add(CreateStatCard("Ventas Totales", "L0.00", Color.FromArgb(46, 125, 50), out lblStatTotal, null));
+        topPanel.Controls.Add(CreateStatCard("Entregados", "0", Color.FromArgb(25, 118, 210), out lblStatCount, "entregado"));
+        topPanel.Controls.Add(CreateStatCard("Pendientes", "0", Color.FromArgb(255, 160, 0), out lblStatPending, "pendiente"));
+        topPanel.Controls.Add(CreateStatCard("En Cocina", "0", Color.FromArgb(123, 31, 162), out lblStatKitchen, "en_preparacion"));
+        topPanel.Controls.Add(CreateStatCard("En Camino", "0", Color.FromArgb(0, 151, 167), out lblStatDelivery, "en_camino"));
+        topPanel.Controls.Add(CreateStatCard("Cancelados", "0", Color.FromArgb(198, 40, 40), out lblStatCancelled, "cancelado"));
 
-        // Separador Espacial
-        topPanel.Controls.Add(new Panel { Width = 30, Height = 10 });
+        mainLayout.Controls.Add(topPanel, 0, 1);
 
-        // Panel de Filtros (Card feel)
+        // 3. PANEL DE FILTROS (Debajo de las cards)
         var pnlFilters = new Panel { 
-            Width = 550, 
-            Height = 90, 
-            BackColor = Color.White,
-            Padding = new Padding(15)
+            Dock = DockStyle.Fill, 
+            Height = 50, 
+            BackColor = Color.Transparent,
+            Padding = new Padding(0, 5, 0, 5)
         };
-        pnlFilters.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, pnlFilters.Width, pnlFilters.Height, 15, 15));
 
-        var lblF = new Label { Text = "Filtrar por Fecha y Búsqueda", Font = new Font("Segoe UI", 9F, FontStyle.Bold), Location = new Point(15, 10), AutoSize = true };
-        dtpFrom = new DateTimePicker { Location = new Point(15, 35), Width = 110, Format = DateTimePickerFormat.Short, Value = DateTime.Today.AddDays(-7) };
-        dtpTo = new DateTimePicker { Location = new Point(135, 35), Width = 110, Format = DateTimePickerFormat.Short, Value = DateTime.Today };
-        txtSearch = new TextBox { Location = new Point(255, 35), Width = 150, PlaceholderText = "Buscar orden..." };
+        var filterContainer = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight };
+
+        var lblF = new Label { Text = "Filtrar por Fecha:", Font = new Font("Segoe UI", 9F, FontStyle.Bold), Margin = new Padding(0, 8, 5, 0), AutoSize = true };
+        dtpFrom = new DateTimePicker { Width = 110, Format = DateTimePickerFormat.Short, Value = DateTime.Today.AddDays(-7) };
+        dtpTo = new DateTimePicker { Width = 110, Format = DateTimePickerFormat.Short, Value = DateTime.Today };
+        
+        var lblS = new Label { Text = "Búsqueda:", Font = new Font("Segoe UI", 9F, FontStyle.Bold), Margin = new Padding(20, 8, 5, 0), AutoSize = true };
+        txtSearch = new TextBox { Width = 200, PlaceholderText = "Nombre cliente u orden..." };
         
         btnSearch = new Button { 
-            Text = "Actualizar", 
-            Location = new Point(415, 32), 
-            Size = new Size(110, 32),
+            Text = "Actualizar Vista 🔄", 
+            Width = 150,
+            Height = 30,
             BackColor = Color.FromArgb(45, 45, 48),
             ForeColor = Color.White,
             FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            Margin = new Padding(15, 0, 0, 0)
         };
         btnSearch.FlatAppearance.BorderSize = 0;
         btnSearch.Click += async (s, e) => await LoadHistory();
 
-        pnlFilters.Controls.AddRange(new Control[] { lblF, dtpFrom, dtpTo, txtSearch, btnSearch });
-        topPanel.Controls.Add(pnlFilters);
+        filterContainer.Controls.AddRange(new Control[] { lblF, dtpFrom, dtpTo, lblS, txtSearch, btnSearch });
+        pnlFilters.Controls.Add(filterContainer);
 
-        mainLayout.Controls.Add(topPanel, 0, 1);
+        mainLayout.Controls.Add(pnlFilters, 0, 2);
 
-        // 3. GRID MODERNO
+        // 4. GRID MODERNO
         var pnlGrid = new Panel { 
             Dock = DockStyle.Fill, 
             BackColor = Color.White,
@@ -137,38 +147,72 @@ public partial class OrderHistoryControl : UserControl
         };
 
         pnlGrid.Controls.Add(dgvHistory);
-        mainLayout.Controls.Add(pnlGrid, 0, 2);
+        mainLayout.Controls.Add(pnlGrid, 0, 3);
 
         this.Controls.Add(mainLayout);
     }
 
-    private Panel CreateStatCard(string title, string value, Color accentColor, out Label lblValue)
+    private Panel CreateStatCard(string title, string value, Color accentColor, out Label lblValue, string? filterStatus)
     {
-        var panel = new Panel { Width = 180, Height = 90, BackColor = Color.White, Margin = new Padding(0, 0, 15, 0) };
+        var panel = new Panel { 
+            Width = 145, 
+            Height = 90, 
+            BackColor = Color.White, 
+            Margin = new Padding(0, 0, 10, 0),
+            Cursor = Cursors.Hand
+        };
         panel.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel.Width, panel.Height, 15, 15));
 
-        var pnlAccent = new Panel { Dock = DockStyle.Left, Width = 5, BackColor = accentColor };
+        // Evento de filtrado al hacer clic en la tarjeta
+        panel.Click += (s, e) => ApplyLocalFilter(filterStatus);
+
+        var pnlAccent = new Panel { Dock = DockStyle.Left, Width = 5, BackColor = accentColor, Enabled = false };
         panel.Controls.Add(pnlAccent);
 
         var lblT = new Label { 
             Text = title, 
-            Font = new Font("Segoe UI", 9F), 
+            Font = new Font("Segoe UI", 8F), 
             ForeColor = Color.Gray, 
             Location = new Point(15, 15), 
-            AutoSize = true 
+            AutoSize = true,
+            Enabled = false
         };
         
         lblValue = new Label { 
             Text = value, 
-            Font = new Font("Segoe UI Semibold", 16F), 
+            Font = new Font("Segoe UI Semibold", 13F), 
             ForeColor = Color.FromArgb(45, 45, 48), 
             Location = new Point(12, 35), 
-            AutoSize = true 
+            AutoSize = true,
+            Enabled = false
         };
 
         panel.Controls.Add(lblValue);
         panel.Controls.Add(lblT);
+
+        // Asegurar que el clic funcione en los labels también
+        lblT.Click += (s, e) => ApplyLocalFilter(filterStatus);
+        lblValue.Click += (s, e) => ApplyLocalFilter(filterStatus);
+
         return panel;
+    }
+
+    private void ApplyLocalFilter(string? statusCode)
+    {
+        var filtered = string.IsNullOrEmpty(statusCode) 
+            ? _orders 
+            : _orders.Where(o => o.StatusCode == statusCode || (statusCode == "pendiente" && o.StatusCode == "confirmado") || (statusCode == "en_preparacion" && o.StatusCode == "listo")).ToList();
+
+        dgvHistory.DataSource = filtered.Select(o => {
+            var displayDate = (o.StatusCode == "entregado" || o.StatusCode == "cancelado") ? o.UpdatedAt : o.CreatedAt;
+            return new {
+                Fecha = displayDate.ToString("dd/MM/yyyy HH:mm"),
+                Orden = o.OrderNumber,
+                Cliente = o.CustomerName,
+                Estado = o.StatusName.ToUpper(),
+                Total = o.Total.ToString("C2")
+            };
+        }).ToList();
     }
 
     [System.Runtime.InteropServices.DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
@@ -188,21 +232,31 @@ public partial class OrderHistoryControl : UserControl
                 var result = JsonSerializer.Deserialize<DynamicResponse<List<OrderResponseDto>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 _orders = result?.Data ?? new();
                 
-                // Actualizar Stats - SOLO pedidos ENTREGADOS cuentan como ganancia
+                // Actualizar Stats
                 decimal total = _orders.Where(o => o.StatusCode == "entregado").Sum(o => o.Total);
-                int count = _orders.Count;
+                int delivered = _orders.Count(o => o.StatusCode == "entregado");
+                int pending = _orders.Count(o => o.StatusCode == "pendiente" || o.StatusCode == "confirmado");
+                int kitchen = _orders.Count(o => o.StatusCode == "en_preparacion" || o.StatusCode == "listo");
+                int delivery = _orders.Count(o => o.StatusCode == "en_camino");
                 int cancelled = _orders.Count(o => o.StatusCode == "cancelado");
 
                 lblStatTotal.Text = total.ToString("C2");
-                lblStatCount.Text = count.ToString();
+                lblStatCount.Text = delivered.ToString();
+                lblStatPending.Text = pending.ToString();
+                lblStatKitchen.Text = kitchen.ToString();
+                lblStatDelivery.Text = delivery.ToString();
                 lblStatCancelled.Text = cancelled.ToString();
 
-                dgvHistory.DataSource = _orders.Select(o => new {
-                    Fecha = o.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
-                    Orden = o.OrderNumber,
-                    Cliente = o.CustomerName,
-                    Estado = o.StatusName.ToUpper(),
-                    Total = o.Total.ToString("C2")
+                dgvHistory.DataSource = _orders.Select(o => {
+                    // Usar UpdatedAt para Entregados/Cancelados, sino CreatedAt
+                    var displayDate = (o.StatusCode == "entregado" || o.StatusCode == "cancelado") ? o.UpdatedAt : o.CreatedAt;
+                    return new {
+                        Fecha = displayDate.ToString("dd/MM/yyyy HH:mm"),
+                        Orden = o.OrderNumber,
+                        Cliente = o.CustomerName,
+                        Estado = o.StatusName.ToUpper(),
+                        Total = o.Total.ToString("C2")
+                    };
                 }).ToList();
             }
         }
