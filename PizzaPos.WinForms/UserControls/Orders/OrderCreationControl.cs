@@ -14,7 +14,7 @@ public partial class OrderCreationControl : UserControl
     
     private BindingList<ProductModel> _productsCatalog = new();
     private BindingList<CartItem> _cart = new();
-    private decimal _ivaRate = 0.13m;
+    private decimal _ivaRate = 0.15m;
     private CustomerModel? _selectedCustomer;
 
     public OrderCreationControl(string token)

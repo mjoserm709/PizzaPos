@@ -137,7 +137,7 @@ partial class OrderCreationControl
         this.lblSubtotal.Size = new System.Drawing.Size(180, 25);
         this.lblSubtotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 
-        this.lblTax.Text = "IVA (13%): $0.00";
+        this.lblTax.Text = "IVA (15%): $0.00";
         this.lblTax.Font = new System.Drawing.Font("Segoe UI", 10F);
         this.lblTax.Location = new System.Drawing.Point(280, 280);
         this.lblTax.Size = new System.Drawing.Size(180, 25);
