@@ -19,7 +19,9 @@ public class ProductRepository : IProductRepository
     public async Task<Product?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
 
     public async Task<IEnumerable<Product>> GetAllAsync() => 
-        await _dbSet.Include(p => p.Category).ToListAsync();
+        await _dbSet.Include(p => p.Category)
+                    .Include(p => p.Size)
+                    .ToListAsync();
 
     public async Task AddAsync(Product product)
     {

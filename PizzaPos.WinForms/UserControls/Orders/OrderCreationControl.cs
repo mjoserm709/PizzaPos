@@ -133,21 +133,31 @@ public partial class OrderCreationControl : UserControl
         foreach (var product in products)
         {
             var card = new Panel {
-                Size = new Size(130, 140),
+                Size = new Size(150, 160),
                 BackColor = Color.White,
-                Margin = new Padding(5),
+                Margin = new Padding(8),
                 Cursor = Cursors.Hand
             };
             card.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, card.Width, card.Height, 15, 15));
+            
+            var toolTip = new ToolTip();
+            if (!string.IsNullOrEmpty(product.Description))
+                toolTip.SetToolTip(card, product.Description);
+
+            string displayName = product.Name;
+            if (product.Size != null)
+                displayName = $"{product.Name}\n({product.Size.Name})";
 
             var lblName = new Label {
-                Text = product.Name,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                Text = displayName,
+                Font = new Font("Segoe UI", 8.5F, FontStyle.Bold),
                 Dock = DockStyle.Top,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Height = 45,
-                Padding = new Padding(5)
+                Height = 60,
+                Padding = new Padding(3)
             };
+            if (!string.IsNullOrEmpty(product.Description))
+                toolTip.SetToolTip(lblName, product.Description);
 
             var lblPrice = new Label {
                 Text = product.Price.ToString("C2"),
