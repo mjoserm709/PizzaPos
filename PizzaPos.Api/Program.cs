@@ -8,8 +8,19 @@ using PizzaPos.Infrastructure.Data;
 using PizzaPos.Infrastructure.Identity;
 using PizzaPos.Domain.Repositories;
 using PizzaPos.Infrastructure.Repositories;
+using PizzaPos.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWinForms", policy => 
+        policy.AllowAnyMethod()
+              .AllowAnyHeader()
+              .SetIsOriginAllowed(_ => true)
+              .AllowCredentials());
+});
 
 // Add services to the container.
 builder.Services.AddDbContext<PizzaPosDbContext>(options =>
@@ -82,6 +93,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseCors("AllowWinForms");
 app.MapControllers();
+app.MapHub<OrderHub>("/orderHub");
 
 app.Run();

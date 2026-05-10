@@ -22,6 +22,8 @@ partial class OrderCreationControl
         this.lblTitleCustomer = new System.Windows.Forms.Label();
         this.cmbAddress = new System.Windows.Forms.ComboBox();
         this.lblAddress = new System.Windows.Forms.Label();
+        this.lstCustomerResults = new System.Windows.Forms.ListBox();
+        this.searchTimer = new System.Windows.Forms.Timer();
 
         this.pnlProducts = new System.Windows.Forms.Panel();
         this.dgvProducts = new System.Windows.Forms.DataGridView();
@@ -64,7 +66,25 @@ partial class OrderCreationControl
 
         this.txtSearchCustomer.Location = new System.Drawing.Point(20, 40);
         this.txtSearchCustomer.Size = new System.Drawing.Size(200, 30);
-        this.txtSearchCustomer.PlaceholderText = "Teléfono / Email";
+        this.txtSearchCustomer.PlaceholderText = "Nombre / Teléfono";
+        this.txtSearchCustomer.TextChanged += new System.EventHandler(this.txtSearchCustomer_TextChanged);
+
+        // lstCustomerResults
+        this.lstCustomerResults.Font = new System.Drawing.Font("Segoe UI", 10F);
+        this.lstCustomerResults.FormattingEnabled = true;
+        this.lstCustomerResults.ItemHeight = 25;
+        this.lstCustomerResults.Location = new System.Drawing.Point(20, 70);
+        this.lstCustomerResults.Name = "lstCustomerResults";
+        this.lstCustomerResults.Size = new System.Drawing.Size(350, 150);
+        this.lstCustomerResults.TabIndex = 100;
+        this.lstCustomerResults.Visible = false;
+        this.lstCustomerResults.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+        this.lstCustomerResults.DoubleClick += new System.EventHandler(this.lstCustomerResults_DoubleClick);
+        this.lstCustomerResults.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstCustomerResults_KeyDown);
+
+        // searchTimer
+        this.searchTimer.Interval = 400;
+        this.searchTimer.Tick += new System.EventHandler(this.searchTimer_Tick);
 
         this.btnSearchCustomer.Text = "Buscar";
         this.btnSearchCustomer.Location = new System.Drawing.Point(230, 40);
@@ -173,6 +193,7 @@ partial class OrderCreationControl
         this.btnFinalize.Click += new System.EventHandler(this.btnFinalize_Click);
 
         // Control principal
+        this.Controls.Add(this.lstCustomerResults);
         this.Controls.Add(this.pnlCart);
         this.Controls.Add(this.pnlProducts);
         this.Controls.Add(this.pnlCustomer);
@@ -212,4 +233,6 @@ partial class OrderCreationControl
     private System.Windows.Forms.Label lblTitleCart;
     private System.Windows.Forms.ComboBox cmbPaymentMethod;
     private System.Windows.Forms.Label lblPayment;
+    private System.Windows.Forms.ListBox lstCustomerResults;
+    private System.Windows.Forms.Timer searchTimer;
 }

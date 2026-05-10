@@ -96,6 +96,21 @@ public class OrderService : IOrderService
         return order != null ? MapToDto(order) : null;
     }
 
+    public async Task UpdateOrderStatusAsync(int orderId, string statusCode, string currentUsername)
+    {
+        var order = await _orderRepository.GetByIdAsync(orderId);
+        if (order == null) throw new Exception("Pedido no encontrado");
+
+        var status = await _statusRepository.GetByCodeAsync(statusCode);
+        if (status == null) throw new Exception("Estado no válido");
+
+        order.StatusId = status.Id;
+        order.UpdatedAt = DateTime.Now;
+        order.UpdatedBy = currentUsername;
+
+        await _orderRepository.UpdateAsync(order);
+    }
+
     private OrderResponseDto MapToDto(Order o)
     {
         return new OrderResponseDto(

@@ -70,7 +70,7 @@ public partial class OrderCreationControl : UserControl
         try
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            var res = await _httpClient.GetAsync("http://localhost:5267/api/security/catalog/products");
+            var res = await _httpClient.GetAsync("http://localhost:5267/api/products");
             if (res.IsSuccessStatusCode)
             {
                 var json = await res.Content.ReadAsStringAsync();
@@ -100,40 +100,108 @@ public partial class OrderCreationControl : UserControl
         cmbPaymentMethod.SelectedIndex = 0;
     }
 
-    private async void btnSearchCustomer_Click(object sender, EventArgs e)
+    private void txtSearchCustomer_TextChanged(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(txtSearchCustomer.Text)) return;
+        searchTimer.Stop();
+        
+        // Si el texto coincide con el cliente seleccionado, no buscamos (evita bucle)
+        if (_selectedCustomer != null && txtSearchCustomer.Text == _selectedCustomer.FullName)
+        {
+            lstCustomerResults.Visible = false;
+            return;
+        }
 
+        if (txtSearchCustomer.Text.Length >= 2)
+        {
+            searchTimer.Start();
+        }
+        else
+        {
+            lstCustomerResults.Visible = false;
+        }
+    }
+
+    private async void searchTimer_Tick(object sender, EventArgs e)
+    {
+        searchTimer.Stop();
+        await PerformCustomerSearch(txtSearchCustomer.Text);
+    }
+
+    private async Task PerformCustomerSearch(string term)
+    {
         try
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            var res = await _httpClient.GetAsync($"http://localhost:5267/api/customers/phone/{txtSearchCustomer.Text}");
+            var res = await _httpClient.GetAsync($"http://localhost:5267/api/customers/search?term={term}");
             if (res.IsSuccessStatusCode)
             {
                 var json = await res.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<DynamicResponse<CustomerModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (result.Success && result.Data != null)
+                var result = JsonSerializer.Deserialize<DynamicResponse<List<CustomerModel>>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (result?.Data != null && result.Data.Any())
                 {
-                    _selectedCustomer = result.Data;
-                    lblCustomerInfo.Text = $"Cliente: {_selectedCustomer.FullName}";
-                    lblCustomerInfo.ForeColor = System.Drawing.Color.Black;
+                    var displayList = result.Data.Select(c => new CustomerSearchItem { 
+                        Display = $"{c.FullName} | {c.Phone}", 
+                        Data = c 
+                    }).ToList();
+
+                    lstCustomerResults.DataSource = displayList;
+                    lstCustomerResults.DisplayMember = "Display";
+                    lstCustomerResults.ValueMember = "Data";
                     
-                    // Cargar direcciones
-                    cmbAddress.DataSource = null;
-                    cmbAddress.DataSource = _selectedCustomer.Addresses;
-                    cmbAddress.DisplayMember = "Street";
-                    
-                    ToastNotification.Success("Cliente encontrado");
+                    lstCustomerResults.Visible = true;
+                    lstCustomerResults.BringToFront();
+                }
+                else
+                {
+                    lstCustomerResults.Visible = false;
                 }
             }
-            else
-            {
-                _selectedCustomer = null;
-                lblCustomerInfo.Text = "Cliente no encontrado. Se creará uno nuevo al finalizar.";
-                lblCustomerInfo.ForeColor = System.Drawing.Color.DarkRed;
-            }
         }
-        catch (Exception ex) { ToastNotification.Error("Error buscando cliente: " + ex.Message); }
+        catch { lstCustomerResults.Visible = false; }
+    }
+
+    private void lstCustomerResults_DoubleClick(object sender, EventArgs e)
+    {
+        SelectCustomer();
+    }
+
+    private void lstCustomerResults_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter)
+        {
+            SelectCustomer();
+        }
+    }
+
+    private void SelectCustomer()
+    {
+        if (lstCustomerResults.SelectedItem is CustomerSearchItem selected)
+        {
+            var customer = selected.Data;
+            _selectedCustomer = customer;
+            
+            // Ocultar primero para evitar eventos de cambio
+            lstCustomerResults.Visible = false;
+            
+            txtSearchCustomer.Text = customer.FullName;
+            lblCustomerInfo.Text = $"Cliente: {customer.FullName} ({customer.Phone})";
+            lblCustomerInfo.ForeColor = System.Drawing.Color.Black;
+            
+            cmbAddress.DataSource = null;
+            cmbAddress.DataSource = customer.Addresses;
+            cmbAddress.DisplayMember = "Street";
+            
+            ToastNotification.Success("Cliente seleccionado");
+            
+            // Quitar foco para cerrar teclado/lista
+            this.ActiveControl = cmbAddress;
+        }
+    }
+
+    private async void btnSearchCustomer_Click(object sender, EventArgs e)
+    {
+        // El botón ahora es opcional, pero lo dejamos por si quieren forzar la búsqueda
+        await PerformCustomerSearch(txtSearchCustomer.Text);
     }
 
     private void dgvProducts_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -242,4 +310,10 @@ public class CartItem : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+}
+
+public class CustomerSearchItem
+{
+    public string Display { get; set; } = string.Empty;
+    public CustomerModel Data { get; set; } = null!;
 }

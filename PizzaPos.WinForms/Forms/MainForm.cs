@@ -26,6 +26,7 @@ public partial class MainForm : Form
         _token = token;
         
         SetupLayout();
+        _ = Utils.SignalRService.Instance.StartAsync();
     }
 
     private void SetupLayout()
@@ -48,6 +49,7 @@ public partial class MainForm : Form
         
         // Eventos del Sidebar
         _sidebar.NewOrderClick += (s, e) => LoadControl(new OrderCreationControl(_token));
+        _sidebar.ActiveOrdersClick += (s, e) => LoadControl(new OrderManagementControl(_token));
         _sidebar.CustomersClick += (s, e) => LoadControl(new CustomerManagementControl(_token, _permissions));
         _sidebar.ProductsClick += (s, e) => LoadControl(new ProductManagementControl(_token, _permissions));
         _sidebar.ManageUsersClick += (s, e) => LoadControl(new UserManagementControl(_token, _permissions));

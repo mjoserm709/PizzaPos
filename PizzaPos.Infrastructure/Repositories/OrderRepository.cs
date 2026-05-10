@@ -88,4 +88,10 @@ public class OrderRepository : IOrderRepository
         await _dbSet.AddAsync(order);
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateAsync(Order order)
+    {
+        _dbSet.Update(order);
+        await _context.SaveChangesAsync();
+    }
 }

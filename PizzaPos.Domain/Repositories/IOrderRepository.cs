@@ -18,6 +18,7 @@ public interface IOrderRepository
     Task<IEnumerable<Order>> GetByStatusAsync(string statusCode);
     Task<string> GetNextOrderNumberAsync();
     Task AddAsync(Order order);
+    Task UpdateAsync(Order order);
 }
 
 public interface IAppConfigRepository

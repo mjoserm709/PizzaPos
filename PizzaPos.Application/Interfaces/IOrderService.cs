@@ -8,6 +8,7 @@ public interface IOrderService
     Task<IEnumerable<OrderResponseDto>> GetOrdersByStatusAsync(string statusCode);
     Task<OrderResponseDto?> GetOrderByIdAsync(int id);
     Task<decimal> GetIvaRateAsync();
+    Task UpdateOrderStatusAsync(int orderId, string statusCode, string currentUsername);
 }
 
 // DTOs Necesarios
