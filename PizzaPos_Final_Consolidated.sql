@@ -7,6 +7,19 @@ Compatible con SQL Server.
 ================================================================================
 */
 
+IF NOT EXISTS (
+    SELECT name 
+    FROM sys.databases 
+    WHERE name = 'PizzaPos'
+)
+BEGIN
+    CREATE DATABASE PizzaPos;
+END
+GO
+
+USE PizzaPos
+GO
+
 -- 1. LIMPIEZA (Orden inverso de dependencias)
 IF OBJECT_ID('dbo.UserPermissions', 'U') IS NOT NULL DROP TABLE dbo.UserPermissions;
 IF OBJECT_ID('dbo.RolePermissions', 'U') IS NOT NULL DROP TABLE dbo.RolePermissions;
@@ -313,10 +326,10 @@ SELECT 1, Id FROM Permissions;
 
 -- 5.4 Usuarios Iniciales
 INSERT INTO Users (FullName, Email, PasswordHash, RoleId, IdentityNumber) 
-VALUES ('Administrador', 'admin@pizzeria.com', 'admin123', 1, '0000-0000-00000'),
-       ('Cajero de Turno', 'cajero@pizzeria.com', '123456', 2, '1111-1111-11111'),
-       ('Maestro Pizzero', 'cocinero@pizzeria.com', '123456', 3, '2222-2222-22222'),
-       ('Repartidor Express', 'repartidor@pizzeria.com', '123456', 4, '3333-3333-33333');
+VALUES ('Administrador', 'admin@pizzeria.com', '$2a$11$bwa8gi5ttCLJNZGUq6IWI.aOnJ0U9YqbBATnkDs6VNTarlQQLY02G', 1, '0000-0000-00000'),
+       ('Cajero de Turno', 'cajero@pizzeria.com', '$2a$11$VSRBqLWqTT4FFViDtRiTmO1j.4wU7bhQFEc8cPBTynDgbB/m6PCWy', 2, '1111-1111-11111'),
+       ('Maestro Pizzero', 'cocinero@pizzeria.com', '$2a$11$VSRBqLWqTT4FFViDtRiTmO1j.4wU7bhQFEc8cPBTynDgbB/m6PCWy', 3, '2222-2222-22222'),
+       ('Repartidor Express', 'repartidor@pizzeria.com', '$2a$11$VSRBqLWqTT4FFViDtRiTmO1j.4wU7bhQFEc8cPBTynDgbB/m6PCWy', 4, '3333-3333-33333');
 
 -- 5.5 Estados de Pedido
 INSERT INTO OrderStatuses (Code, Name, DisplayOrder) VALUES 
